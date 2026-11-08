@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#eee9dc">
+<title>Ugly Little People</title>
+<style>
+  :root{
+    --ink:#27231f; --paper:#eee9dc; --cream:#d9c28f; --rose:#b47b74;
+    --blue:#87919a; --green:#87958c; --skin:#d6a47e;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#dedbd2;color:var(--ink);font-family:Georgia,"Times New Roman",serif}
+  body{min-height:100svh;display:flex;align-items:flex-start;justify-content:center;padding:0}
+  .page{
+    width:min(100%,720px); background:var(--paper); position:relative; overflow:hidden;
+    box-shadow:0 0 30px rgba(40,35,30,.12);
+  }
+  .tip{
+    position:absolute;z-index:20;left:14px;bottom:14px;
+    background:rgba(238,233,220,.84);border:1px solid rgba(39,35,31,.22);
+    border-radius:999px;padding:8px 11px;font:12px/1.2 system-ui,-apple-system,sans-serif;
+    backdrop-filter:blur(7px);pointer-events:none;transition:opacity .5s;
+  }
+  svg{width:100%;height:auto;display:block;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+  .ink{fill:none;stroke:var(--ink);stroke-width:2.15;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+  .thin{stroke-width:1.55}
+  .scratch{stroke-width:1.15;opacity:.85}
+  .fill-skin{fill:rgba(214,164,126,.22)}
+  .fill-cream{fill:rgba(217,194,143,.28)}
+  .fill-rose{fill:rgba(180,123,116,.22)}
+  .fill-blue{fill:rgba(135,145,154,.20)}
+  .fill-green{fill:rgba(135,149,140,.20)}
+  .person{cursor:pointer;transform-box:fill-box;transform-origin:center}
+  .person .part{transform-box:fill-box;transform-origin:center}
+  .person:focus{outline:none}
+  .person:focus-visible .focus-ring{opacity:1}
+  .focus-ring{fill:none;stroke:#74675c;stroke-width:2;stroke-dasharray:4 6;opacity:0;vector-effect:non-scaling-stroke}
+  .motion{opacity:0}
+  .idle-a{animation:idleA 4.6s ease-in-out infinite}
+  .idle-b{animation:idleB 3.7s ease-in-out infinite}
+  .idle-c{animation:idleC 5.1s ease-in-out infinite}
+  .idle-d{animation:idleD 4.2s ease-in-out infinite}
+  .idle-e{animation:idleE 5.4s ease-in-out infinite}
+  @keyframes idleA{0%,100%{transform:rotate(-.35deg)}50%{transform:rotate(.65deg) translateY(-1px)}}
+  @keyframes idleB{0%,100%{transform:translateY(0)}50%{transform:translateY(2px) rotate(.7deg)}}
+  @keyframes idleC{0%,100%{transform:rotate(.25deg)}50%{transform:rotate(-.55deg) translateY(-1px)}}
+  @keyframes idleD{0%,100%{transform:rotate(-.2deg)}50%{transform:rotate(.6deg) translateX(1px)}}
+  @keyframes idleE{0%,100%{transform:translateX(0)}50%{transform:translateX(1px) rotate(.25deg)}}
+  .person.hit-a{animation:hitA .72s cubic-bezier(.2,.8,.2,1)}
+  .person.hit-b{animation:hitB .62s ease-out}
+  .person.hit-c{animation:hitC .75s ease-out}
+  .person.hit-d{animation:hitD .7s ease-out}
+  .person.hit-e{animation:hitE .78s ease-out}
+  .person.hit-a .head{animation:headA .72s ease-out}
+  .person.hit-c .tie{animation:tie .75s ease-out}
+  .person.hit-d .head{animation:headD .7s ease-out}
+  .person.hit-e .arm{animation:arm .78s ease-out}
+  .person.hit-b .eyes{animation:blink .62s ease-out}
+  .person.hit-a .motion,.person.hit-b .motion,.person.hit-c .motion,.person.hit-d .motion,.person.hit-e .motion{animation:lines .7s ease-out}
+  @keyframes hitA{0%{transform:rotate(0)}28%{transform:rotate(-5deg) translate(-5px,-3px)}52%{transform:rotate(4deg) translate(4px,1px)}75%{transform:rotate(-2deg)}100%{transform:rotate(0)}}
+  @keyframes hitB{0%{transform:scale(1)}30%{transform:scale(1.06,.92) translateY(4px)}56%{transform:scale(.98,1.04) translateY(-3px)}100%{transform:scale(1)}}
+  @keyframes hitC{0%{transform:rotate(0)}32%{transform:rotate(4deg) translateY(5px)}58%{transform:rotate(-3deg) translateY(-2px)}100%{transform:rotate(0)}}
+  @keyframes hitD{0%{transform:translate(0)}25%{transform:translate(-7px,-4px) rotate(-4deg)}48%{transform:translate(6px,2px) rotate(4deg)}72%{transform:translate(-3px,0) rotate(-2deg)}100%{transform:translate(0)}}
+  @keyframes hitE{0%{transform:translateX(0)}24%{transform:translateX(7px) rotate(2deg)}48%{transform:translateX(-6px) rotate(-1.5deg)}72%{transform:translateX(3px)}100%{transform:translateX(0)}}
+  @keyframes headA{0%,100%{transform:rotate(0)}40%{transform:rotate(8deg)}68%{transform:rotate(-4deg)}}
+  @keyframes headD{0%,100%{transform:translateY(0)}35%{transform:translateY(-11px) rotate(-5deg)}65%{transform:translateY(3px) rotate(3deg)}}
+  @keyframes tie{0%,100%{transform:rotate(0)}40%{transform:rotate(12deg)}70%{transform:rotate(-7deg)}}
+  @keyframes arm{0%,100%{transform:rotate(0)}35%{transform:rotate(-13deg)}68%{transform:rotate(7deg)}}
+  @keyframes blink{0%,30%,70%,100%{transform:scaleY(1)}45%,56%{transform:scaleY(.15)}}
+  @keyframes lines{0%{opacity:0}25%{opacity:.85}100%{opacity:0}}
+  .tapdot{pointer-events:none;position:absolute;width:12px;height:12px;border:1px solid var(--ink);border-radius:50%;transform:translate(-50%,-50%) scale(.3);opacity:0}
+  .tapdot.go{animation:tapdot .52s ease-out}
+  @keyframes tapdot{0%{opacity:.65;transform:translate(-50%,-50%) scale(.3)}100%{opacity:0;transform:translate(-50%,-50%) scale(3)}}
+  @media(prefers-reduced-motion:reduce){
+    .person,.part{animation:none!important}
+    .tip{display:none}
+  }
+</style>
+</head>
+<body>
+<main class="page" id="page">
+<div class="tip" id="tip">摸一下这些人</div>
+
+<svg id="drawing" viewBox="0 0 768 1024" role="img" aria-label="一页会动的手绘简笔画人物">
+  <defs>
+    <filter id="paper">
+      <feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="3" seed="8" result="n"/>
+      <feColorMatrix in="n" type="saturate" values="0" result="g"/>
+      <feComponentTransfer in="g"><feFuncA type="table" tableValues="0 .055"/></feComponentTransfer>
+    </filter>
+  </defs>
+  <rect width="768" height="1024" fill="#eee9dc"/>
+  <rect width="768" height="1024" fill="#7b6b55" filter="url(#paper)" opacity=".18"/>
+
+  <!-- top-left: round collar, dotted shirt, tilted awkward face -->
+  <g class="person idle-a" id="p1" tabindex="0" role="button" aria-label="左上人物，点一下让她晃">
+    <ellipse class="focus-ring" cx="246" cy="227" rx="174" ry="191"/>
+    <g class="part head">
+      <path class="fill-skin" d="M116 76 Q151 38 203 49 Q251 57 272 98 L259 165 Q236 196 189 195 Q142 193 116 158 Z"/>
+      <path class="ink" d="M112 78 Q145 36 202 48 Q252 57 273 99"/>
+      <path class="ink" d="M116 82 Q108 119 119 154 Q145 191 189 194 Q235 195 259 164 Q272 136 271 100"/>
+      <path class="ink scratch" d="M128 69 q19-24 41-20 M145 54 q24-19 49-2 M180 50 q22-9 42 9"/>
+      <path class="ink" d="M137 102 q18-15 34 1 q-14 17-34-1 M215 102 q17-13 31 4 q-14 15-31-4"/>
+      <circle cx="155" cy="102" r="3.4" fill="#27231f"/><circle cx="230" cy="104" r="3.2" fill="#27231f"/>
+      <path class="ink thin" d="M191 106 q-3 24-12 36 q10 8 21 1"/>
+      <path class="ink" d="M160 158 q28-16 49 0 q-23 19-49 0"/>
+      <path class="ink scratch" d="M129 124 l29 14 M132 130 l24 12 M231 128 l24-9 M233 135 l21-8"/>
+    </g>
+    <path class="fill-cream" d="M110 182 Q139 153 170 173 L254 176 Q293 184 343 223 L390 262 L364 296 L315 278 L318 338 L139 352 L118 298 L82 344 L52 327 L75 216 Z"/>
+    <path class="ink" d="M109 181 q34-30 67-5 l79 0 q47 14 91 49 l44 37 l-26 34 l-45-18"/>
+    <path class="ink" d="M113 181 q-26 18-39 39 l-22 107 l31 17 l35-48"/>
+    <path class="ink" d="M119 183 q21 23 48 27 q55 8 93-17"/>
+    <path class="ink" d="M134 179 q-4 22 8 39 M238 177 q6 21-4 37"/>
+    <path class="ink" d="M317 238 q7 53 2 101 l-181 13 l-20-56"/>
+    <!-- dots -->
+    <g fill="rgba(180,123,116,.28)" stroke="#27231f" stroke-width="2">
+      <ellipse cx="130" cy="245" rx="12" ry="9"/><ellipse cx="195" cy="255" rx="10" ry="13"/>
+      <ellipse cx="279" cy="224" rx="13" ry="9"/><ellipse cx="285" cy="290" rx="22" ry="15"/>
+      <ellipse cx="185" cy="314" rx="28" ry="18"/><ellipse cx="119" cy="299" rx="11" ry="14"/>
+      <ellipse cx="238" cy="231" rx="8" ry="11"/>
+    </g>
+    <path class="ink scratch" d="M173 169 q-12 20-4 39 M184 170 q-12 19-4 38 M195 170 q-10 19-3 37"/>
+    <g class="motion ink thin">
+      <path d="M72 121 q-16 7-19 26"/><path d="M70 100 q-17 2-23 15"/>
+      <path d="M375 208 q13-5 21 6"/>
+    </g>
+  </g>
+
+  <!-- floating face -->
+  <g class="person idle-b" id="p2" tabindex="0" role="button" aria-label="上方小脸，点一下让她眨眼">
+    <ellipse class="focus-ring" cx="474" cy="60" rx="85" ry="67"/>
+    <path class="fill-skin" d="M397 0 Q432-15 489-4 Q541 11 549 59 Q544 111 483 124 Q417 120 393 80 Z"/>
+    <path class="ink" d="M396 1 q44-18 94-3 q48 16 58 59 q-7 51-65 66 q-64-5-88-43 q-14-37 1-79"/>
+    <g class="eyes part">
+      <path class="ink" d="M422 39 q15-14 29 0 q-14 17-29 0 M488 34 q14-12 27 1 q-13 16-27-1"/>
+      <circle cx="437" cy="38" r="3" fill="#27231f"/><circle cx="502" cy="34" r="3" fill="#27231f"/>
+    </g>
+    <path class="ink thin" d="M466 42 l-5 29 q8 5 14 0"/>
+    <path class="ink" d="M442 87 q24-18 48 0 q-27 16-48 0"/>
+    <path class="ink thin" d="M465 88 q8 8 1 15"/>
+    <path fill="rgba(180,123,116,.3)" stroke="#27231f" stroke-width="1.8" d="M412 60 l18 9 l-14 16 z M519 55 l-18 10 l15 16 z"/>
+    <g class="motion ink thin"><path d="M385 40 q-15 3-21 13"/><path d="M552 40 q14 2 19 13"/></g>
+  </g>
+
+  <!-- handwritten list -->
+  <g fill="#27231f" font-family="'Comic Sans MS','Bradley Hand',cursive">
+    <text x="520" y="255" font-size="20" transform="rotate(-4 520 255)">ACT</text>
+    <path class="ink thin" d="M518 262 q32 2 65 0"/>
+    <text x="516" y="329" font-size="19" transform="rotate(2 516 329)">CMU Robotics.</text>
+    <path class="ink thin" d="M513 340 q88 4 145-1"/>
+    <text x="525" y="389" font-size="18" transform="rotate(-2 525 389)">mit media lab.</text>
+    <path class="ink thin" d="M522 397 q75 7 130 1 M523 401 q82 8 139 1"/>
+    <circle cx="489" cy="379" r="20" fill="none" stroke="#27231f" stroke-width="1.8"/><text x="480" y="386" font-size="20">★</text>
+    <text x="522" y="450" font-size="20" transform="rotate(2 522 450)">Harvard GSD</text>
+    <path class="ink thin" d="M516 458 q83 2 151 0"/>
+    <text x="522" y="510" font-size="22" transform="rotate(-2 522 510)">USCM</text>
+    <path class="ink thin" d="M520 518 q46 5 86 1 M520 522 q43 7 87 2"/>
+    <path class="ink thin" d="M481 239 q20-20 33-23 M491 236 l11-22"/>
+  </g>
+
+  <!-- center beret person -->
+  <g class="person idle-c" id="p3" tabindex="0" role="button" aria-label="中间人物，点一下让她点头">
+    <ellipse class="focus-ring" cx="383" cy="535" rx="150" ry="188"/>
+    <g class="part head">
+      <path class="fill-skin" d="M269 408 Q304 365 356 386 Q395 397 415 436 L402 510 Q371 540 331 526 Q290 515 271 478 Z"/>
+      <path class="ink" d="M270 409 q27-42 83-25 q45 13 63 52 l-14 74 q-30 31-72 16 q-44-14-60-50 q-12-37 0-67"/>
+      <path class="fill-blue" d="M255 407 q31-62 105-50 q35 8 56 42 q-50-22-101 2 q-33 17-60 6"/>
+      <path class="ink" d="M255 407 q34-62 105-50 q36 7 56 42 q-49-21-101 2 q-32 16-60 6"/>
+      <path class="ink" d="M292 440 q15-14 31 1 q-15 16-31-1 M355 438 q15-12 29 2 q-14 15-29-2"/>
+      <circle cx="307" cy="441" r="3" fill="#27231f"/><circle cx="369" cy="439" r="3" fill="#27231f"/>
+      <path class="ink thin" d="M340 443 q-5 22-12 35 q8 6 17 0"/>
+      <path class="ink" d="M315 494 q25-12 46 2 q-25 13-46-2"/>
+      <path class="ink thin" d="M285 476 q-5 8-1 14"/>
+    </g>
+    <path class="fill-blue" d="M288 519 L245 562 L268 714 L401 750 L485 689 L438 548 L401 516 Z"/>
+    <path class="ink" d="M288 518 l-43 44 l23 152 l133 36 l84-61 l-47-141 l-37-33"/>
+    <path class="fill-cream" d="M286 521 l52 42 l-38 39 l-44-40 z M400 517 l-62 46 l42 41 l61-55 z"/>
+    <path class="ink" d="M286 521 l52 42 l-38 39 l-44-40 M400 517 l-62 46 l42 41 l61-55"/>
+    <path class="part tie fill-rose" d="M338 563 l42 41 l-20 21 l-25-23 z"/>
+    <path class="part tie ink" d="M338 563 l42 41 l-20 21 l-25-23 z"/>
+    <path class="ink thin" d="M271 621 q-14 8-13 36 M258 657 q-8 15-1 26"/>
+    <g class="motion ink thin"><path d="M247 430 q-18 0-25 10"/><path d="M444 471 q15 6 20 18"/></g>
+  </g>
+
+  <!-- lower-left box person -->
+  <g class="person idle-d" id="p4" tabindex="0" role="button" aria-label="左下盒子里的人，点一下让她弹出来">
+    <ellipse class="focus-ring" cx="220" cy="795" rx="177" ry="155"/>
+    <path class="fill-rose" d="M74 781 L258 706 L382 790 L336 910 L112 936 Z"/>
+    <path class="ink" d="M74 781 l184-75 l124 84 l-46 120 l-224 26 z"/>
+    <path class="ink" d="M258 706 l-13 120 l91 84 M245 826 l-133 110 M245 826 l-171-45"/>
+    <path d="M223 748 q53-4 68 44 q-19 63-71 68 q-59-6-73-56 q16-52 76-56" fill="#ded4c4" stroke="#27231f" stroke-width="2"/>
+    <g class="part head">
+      <path class="fill-skin" d="M133 667 Q174 624 224 646 Q272 667 284 718 Q284 778 235 810 Q182 821 145 784 Q119 738 133 667 Z"/>
+      <path class="ink" d="M134 669 q36-48 91-23 q48 21 59 71 q-3 59-49 93 q-54 12-90-26 q-27-46-11-115"/>
+      <path class="ink scratch" d="M125 681 q7-50 45-62 M140 657 q20-40 55-35 M159 642 q40-25 74 1 M126 692 l-24 6 M130 706 l-28 13"/>
+      <path class="ink" d="M153 704 q16-14 31 2 q-15 16-31-2 M220 693 q16-12 30 3 q-16 15-30-3"/>
+      <circle cx="168" cy="704" r="3" fill="#27231f"/><circle cx="235" cy="694" r="3" fill="#27231f"/>
+      <path class="ink thin" d="M203 704 q-8 29-17 36 q9 9 20 0"/>
+      <path class="ink" d="M175 760 q27-17 47 0 q-24 18-47 0"/>
+      <path class="ink scratch" d="M139 724 l31 17 M144 730 l25 14"/>
+    </g>
+    <g class="motion ink thin"><path d="M111 658 q-18-8-27 1"/><path d="M278 657 q16-12 28-2"/></g>
+  </g>
+
+  <!-- lower-right square-headed figure -->
+  <g class="person idle-e" id="p5" tabindex="0" role="button" aria-label="右下方头很方的人，点一下让她晃手">
+    <ellipse class="focus-ring" cx="583" cy="799" rx="190" ry="213"/>
+    <g class="part head">
+      <path class="fill-skin" d="M511 581 Q562 554 646 577 Q687 592 702 637 L697 755 Q675 791 607 798 Q545 798 506 766 Q486 711 492 642 Z"/>
+      <path class="ink" d="M510 581 q53-28 136-4 q42 15 56 60 l-5 118 q-24 38-90 43 q-64 0-101-31 q-23-57-14-125 q4-40 18-61"/>
+      <path class="ink scratch" d="M520 575 q33-29 72-20 M551 565 q40-18 78 1 M599 563 q40-5 65 19"/>
+      <path class="ink" d="M524 652 q16-13 31 2 q-15 16-31-2 M624 650 q16-12 30 3 q-15 15-30-3"/>
+      <circle cx="539" cy="652" r="3.2" fill="#27231f"/><circle cx="639" cy="651" r="3.1" fill="#27231f"/>
+      <path class="ink" d="M590 652 q-9 43-5 60 q11 7 19 0"/>
+      <path class="ink" d="M555 739 q34-18 65 0 q-31 19-65 0"/>
+      <path class="ink thin" d="M566 726 q18 4 40 0"/>
+    </g>
+    <path class="fill-green" d="M478 779 Q518 761 549 777 L686 792 Q724 813 738 875 L751 1024 L468 1024 L451 899 L386 894 L390 835 Z"/>
+    <path class="ink" d="M478 779 q42-19 72-2 l136 15 q39 18 52 83 l13 149"/>
+    <path class="ink" d="M468 1024 l-17-125 l-65-5 l4-59 l88-56"/>
+    <path class="ink" d="M496 790 q10 116 8 234 M685 793 q-5 115 3 231"/>
+    <g fill="rgba(180,123,116,.22)" stroke="#27231f" stroke-width="2">
+      <ellipse cx="532" cy="845" rx="24" ry="31"/><ellipse cx="625" cy="857" rx="17" ry="23"/>
+      <ellipse cx="660" cy="924" rx="23" ry="34"/><ellipse cx="550" cy="966" rx="35" ry="24"/>
+      <ellipse cx="713" cy="833" rx="10" ry="18"/>
+    </g>
+    <g class="part arm">
+      <path class="fill-cream" d="M390 836 L280 861 L283 916 L451 899 L478 779 Z"/>
+      <path class="ink" d="M390 836 l-110 25 l3 55 l168-17 l27-120"/>
+      <path class="ink thin" d="M307 861 l1 50 M326 856 l2 52 M346 852 l1 54"/>
+    </g>
+    <path class="ink" d="M681 811 q18 9 14 35 M683 865 q17 9 13 33 M688 915 q14 8 9 27"/>
+    <circle cx="676" cy="828" r="7" fill="none" stroke="#27231f" stroke-width="2"/>
+    <g class="motion ink thin"><path d="M456 812 q-10-15-22-18"/><path d="M746 770 q13 3 18 14"/></g>
+  </g>
+</svg>
+<div class="tapdot" id="tapdot"></div>
+</main>
+
+<script>
+(() => {
+  const page = document.getElementById('page');
+  const tip = document.getElementById('tip');
+  const dot = document.getElementById('tapdot');
+  const people = [...document.querySelectorAll('.person')];
+  let used = false;
+
+  const hitClass = {p1:'hit-a',p2:'hit-b',p3:'hit-c',p4:'hit-d',p5:'hit-e'};
+
+  function animatePerson(el, ev){
+    const c = hitClass[el.id];
+    el.classList.remove(c);
+    void el.getBoundingClientRect();
+    el.classList.add(c);
+
+    if (ev && ev.clientX != null) {
+      const r = page.getBoundingClientRect();
+      dot.style.left = (ev.clientX-r.left) + 'px';
+      dot.style.top = (ev.clientY-r.top) + 'px';
+      dot.classList.remove('go'); void dot.offsetWidth; dot.classList.add('go');
+    }
+    if(!used){used=true; tip.style.opacity='0';}
+    setTimeout(()=>el.classList.remove(c),820);
+  }
+
+  people.forEach(el => {
+    el.addEventListener('pointerdown', e => {
+      e.preventDefault();
+      animatePerson(el,e);
+    }, {passive:false});
+    el.addEventListener('keydown', e => {
+      if(e.key==='Enter' || e.key===' '){e.preventDefault();animatePerson(el);}
+    });
+  });
+
+  document.getElementById('drawing').addEventListener('pointerdown', e => {
+    if(e.target.closest('.person')) return;
+    if(!used){tip.textContent='要摸到小人本身 :)';}
+  });
+
+  // Small automatic movement so the page feels alive even before the first touch.
+  if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
+    setTimeout(()=>animatePerson(document.getElementById('p2')),900);
+    setTimeout(()=>animatePerson(document.getElementById('p4')),1700);
+  }
+})();
+</script>
+</body>
+</html>
