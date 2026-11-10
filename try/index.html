@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#f5f3ed">
   <title>Browser rehearsal — Light Magic</title>
   <link rel="stylesheet" href="../styles.css">
-  <link rel="stylesheet" href="./rehearsal.css">
+  <link rel="stylesheet" href="./rehearsal.css?v=hand-tracking">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -60,8 +60,11 @@
             <button type="button" id="cameraToggle" class="button" aria-describedby="cameraStatus">Start camera</button>
           </div>
           <div id="cameraPane" class="camera-pane" hidden>
-            <video id="rehearsalVideo" autoplay muted playsinline aria-label="Local camera preview"></video>
-            <p class="hint">Show your whole hand, hold the gesture briefly, then relax before repeating.</p>
+            <div class="camera-preview">
+              <video id="rehearsalVideo" autoplay muted playsinline aria-label="Local camera preview"></video>
+              <canvas id="handOverlay" aria-hidden="true"></canvas>
+            </div>
+            <p class="hint">Dots show where the camera sees your hand. Hold an open palm or fist briefly, then relax before repeating.</p>
           </div>
         </div>
         <div class="rehearsal-input phrase-input">
@@ -111,6 +114,6 @@
     <noscript><p class="rehearsal-note">Enable JavaScript to use the rehearsal controls.</p></noscript>
   </main>
   <footer class="site-footer wrap"><span>Light Magic</span><a href="../#setup">Set up the local controller <span aria-hidden="true">↗</span></a></footer>
-  <script type="module" src="./rehearsal.mjs"></script>
+  <script type="module" src="./rehearsal.mjs?v=hand-tracking"></script>
 </body>
 </html>

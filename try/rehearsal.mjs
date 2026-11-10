@@ -1,4 +1,4 @@
-import {createCameraRecognition,createSpeechRecognition} from './recognition.mjs';
+import {createCameraRecognition,createSpeechRecognition} from './recognition.mjs?v=hand-tracking';
 
 const $=id=>document.getElementById(id);
 const channels=[1,2,9];
@@ -172,10 +172,58 @@ function bindDevice({button,status,adapter,label,available=true,unavailable,onAc
   return {stop,notice,fail,isActive:()=>active};
 }
 
+const video=$('rehearsalVideo');
+const handOverlay=$('handOverlay');
+const handContext=handOverlay.getContext('2d');
+const handLines=[
+  [0,1,2,3,4], [0,5,6,7,8], [5,9,10,11,12],
+  [9,13,14,15,16], [13,17,18,19,20], [17,0],
+];
+function drawHand(landmarks){
+  if(!handContext)return;
+  const width=video.videoWidth,height=video.videoHeight;
+  if(landmarks.length!==21||!width||!height){
+    handContext.clearRect(0,0,handOverlay.width,handOverlay.height);
+    return;
+  }
+  // The video and canvas use the same intrinsic dimensions, fit, and mirror.
+  if(handOverlay.width!==width||handOverlay.height!==height){
+    handOverlay.width=width;
+    handOverlay.height=height;
+  }
+  const points=landmarks.map(({x,y})=>[x*width,y*height]);
+  const radius=Math.min(width,height)*.009;
+  handContext.clearRect(0,0,width,height);
+  handContext.lineCap='round';
+  handContext.lineJoin='round';
+  handContext.beginPath();
+  for(const [start,...rest] of handLines){
+    handContext.moveTo(...points[start]);
+    for(const index of rest)handContext.lineTo(...points[index]);
+  }
+  handContext.strokeStyle='#173326';
+  handContext.lineWidth=radius*1.6;
+  handContext.stroke();
+  handContext.strokeStyle='#d7f6c8';
+  handContext.lineWidth=radius*.75;
+  handContext.stroke();
+  handContext.beginPath();
+  for(const [x,y] of points){
+    handContext.moveTo(x+radius,y);
+    handContext.arc(x,y,radius,0,2*Math.PI);
+  }
+  handContext.fillStyle='#e6f8cd';
+  handContext.fill();
+  handContext.strokeStyle='#173326';
+  handContext.lineWidth=radius*.55;
+  handContext.stroke();
+}
+
 let cameraControl,speechControl;
 const camera=createCameraRecognition({
-  video:$('rehearsalVideo'),
+  video,
   onGesture:({gesture})=>{if(cameraControl?.isActive())fire(gesture,'Camera');},
+  onLandmarks:drawHand,
   onStatus:text=>cameraControl?.notice(text),
   onError:text=>cameraControl?.fail(text)
 });

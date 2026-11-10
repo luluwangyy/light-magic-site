@@ -43,7 +43,9 @@ function stopTracks(stream) {
   for (const track of stream?.getTracks() ?? []) track.stop();
 }
 
-export function createCameraRecognition({video, onGesture, onStatus, onError, createRecognizer = loadHandRecognizer}) {
+export function createCameraRecognition({
+  video, onGesture, onLandmarks = () => {}, onStatus, onError, createRecognizer = loadHandRecognizer,
+}) {
   let session;
 
   function stop() {
@@ -55,6 +57,7 @@ export function createCameraRecognition({video, onGesture, onStatus, onError, cr
     stopTracks(current.stream);
     if (current.stream && video.srcObject === current.stream) video.srcObject = null;
     try { current.recognizer?.close(); } catch { /* The media stream has already been released. */ }
+    onLandmarks([]);
     onStatus('Camera stopped');
   }
 
@@ -104,8 +107,9 @@ export function createCameraRecognition({video, onGesture, onStatus, onError, cr
           lastFrame = video.currentTime;
           lastSample = now;
           try {
-            const top = recognizer.recognizeForVideo(video, now).gestures?.[0]?.[0];
-            const gesture = observe(top, now);
+            const result = recognizer.recognizeForVideo(video, now);
+            onLandmarks(result.landmarks?.[0] ?? []);
+            const gesture = observe(result.gestures?.[0]?.[0], now);
             if (gesture) onGesture(gesture);
           } catch {
             fail(current, 'Camera recognition stopped. Try restarting it or use a manual gesture.');

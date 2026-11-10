@@ -111,15 +111,22 @@
 .device-heading .button { flex-shrink: 0; }
 .hint { margin: 4px 0 0; }
 .camera-pane { margin-top: 12px; }
-.camera-pane video {
-  display: block;
+.camera-preview { position: relative; overflow: hidden; border-radius: 5px; background: #272c2e; }
+.camera-preview :is(video, canvas) {
   width: 100%;
+  object-fit: contain;
+  transform: scaleX(-1);
+}
+.camera-preview video {
+  display: block;
   max-height: 235px;
   aspect-ratio: 4 / 3;
-  object-fit: contain;
-  border-radius: 5px;
-  background: #272c2e;
-  transform: scaleX(-1);
+}
+.camera-preview canvas {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  pointer-events: none;
 }
 .phrase-input form { margin-top: 14px; }
 .rehearsal label { display: block; color: var(--ink); font-size: 14px; font-weight: 600; }

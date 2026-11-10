@@ -28,9 +28,10 @@ function cameraFixture(t, getUserMedia, createRecognizer) {
   });
   stubGlobal(t, 'cancelAnimationFrame', id => frames.delete(id));
   const video = {srcObject: null, readyState: 2, currentTime: 0, play: async () => {}};
-  const gestures = [], statuses = [], errors = [];
+  const gestures = [], statuses = [], errors = [], landmarkFrames = [];
   const camera = createCameraRecognition({video, createRecognizer,
     onGesture: gesture => gestures.push(gesture),
+    onLandmarks: landmarks => landmarkFrames.push(landmarks),
     onStatus: status => statuses.push(status),
     onError: error => errors.push(error),
   });
@@ -40,7 +41,7 @@ function cameraFixture(t, getUserMedia, createRecognizer) {
     video.currentTime = time / 1000;
     callback(time);
   }
-  return {camera, video, gestures, statuses, errors, frames, frame};
+  return {camera, video, gestures, statuses, errors, landmarkFrames, frames, frame};
 }
 
 test('camera requires stable evidence, emits once, and re-arms after neutral or a new pose', async t => {
@@ -84,6 +85,27 @@ test('denied camera permission keeps manual fallback and avoids loading the mode
   assert.equal(await mock.camera.start(), false);
   assert.match(mock.errors[0], /permission was denied/);
   assert.equal(mock.statuses.at(-1), 'Camera stopped');
+});
+
+test('camera reports a visible hand without a trigger and clears it on loss and stop', async t => {
+  const hand = Array.from({length: 21}, (_, i) => ({x: i / 21, y: .5}));
+  let detected = true;
+  const mock = cameraFixture(t, async () => deviceStream(), async () => ({
+    recognizeForVideo: () => ({
+      landmarks: detected ? [hand] : [],
+      gestures: detected ? [[{categoryName: 'Victory', score: .95}]] : [],
+    }),
+    close() {},
+  }));
+  assert.equal(await mock.camera.start(), true);
+  mock.frame(100);
+  detected = false;
+  mock.frame(200);
+  detected = true;
+  mock.frame(300);
+  mock.camera.stop();
+  assert.deepEqual(mock.landmarkFrames, [hand, [], hand, []]);
+  assert.deepEqual(mock.gestures, []);
 });
 
 test('a camera that arrives after stop releases its tracks immediately', async t => {
