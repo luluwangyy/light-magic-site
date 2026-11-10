@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Light Magic is a local gesture, learned motion, and offline speech controller for ETC Eos. Download the project and run the controller on your laptop.">
+  <meta name="description" content="Rehearse lighting cues in your browser, then use Light Magic with a bridge on your ETC Eos network.">
   <meta name="theme-color" content="#f5f3ed">
   <title>Light Magic — Movement into light</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2331584e'/%3E%3Cpath d='M17 4 8 18h7l-1 10 10-15h-8z' fill='%23f5f3ed'/%3E%3C/svg%3E">
@@ -14,8 +14,8 @@
   <header class="site-header wrap">
     <a class="wordmark" href="#">Light Magic<span class="brand-dot" aria-hidden="true"></span></a>
     <nav aria-label="Main navigation">
-      <a href="#how-it-works">How it works</a>
-      <a href="#setup">Get started <span aria-hidden="true">↗</span></a>
+      <a href="./try/">Rehearsal</a>
+      <a href="#setup">Live control</a>
     </nav>
   </header>
 
@@ -26,10 +26,10 @@
         <h1 id="hero-title">Movement<br>into <em>light.</em></h1>
         <p class="hero-description">Fire a lighting cue or set a channel level with a hand gesture, a learned motion, or a spoken phrase. Build your mappings, then practice them before going live.</p>
         <div class="actions">
-          <a class="button primary" href="#setup">Set up Light Magic <span aria-hidden="true">↓</span></a>
-          <a class="text-link" href="http://127.0.0.1:8765/">Open local controller <span aria-hidden="true">↗</span></a>
+          <a class="button primary" href="./try/">Open browser rehearsal <span aria-hidden="true">↗</span></a>
+          <a class="text-link" href="#setup">Set up live control <span aria-hidden="true">↓</span></a>
         </div>
-        <p class="local-note">GitHub Pages hosts this guide. Once Light Magic is running, the local controller link opens it on this computer.</p>
+        <p class="local-note">Rehearse with simulated fixtures in your browser. For live control, connect through a bridge on the Eos network.</p>
       </div>
       <aside class="input-panel" aria-labelledby="input-title">
         <p class="panel-heading" id="input-title">Three ways to control the lights</p>
@@ -59,11 +59,19 @@
       </ol>
     </section>
 
+    <section class="operating-note" aria-labelledby="shared-title">
+      <h2 id="shared-title">Shared live control</h2>
+      <div>
+        <p>For shared live control, run Light Magic on one computer connected to Eos. Operators open its private HTTPS address in Chrome or Edge and sign in with the venue’s credentials. One browser controls the show at a time.</p>
+        <p><a href="https://github.com/luluwangyy/light-magic/blob/revised/README.md#shared-live-control">Shared bridge setup</a></p>
+      </div>
+    </section>
+
     <section class="operating-note" aria-labelledby="local-title">
       <h2 id="local-title">Built to run locally.</h2>
       <div>
-        <p>Camera and microphone processing stay on the laptop. The local Python bridge sends cues and channel levels to Eos over OSC/TCP.</p>
-        <p>To map a gesture, learned motion, or phrase to a level, select <strong>Output → Channel level</strong>, enter the channel and percentage, then enable and save the mapping. In <strong>Session</strong>, open the mapping’s console test, choose <strong>Send test level live</strong>, and confirm the visible result before going live.</p>
+        <p>The bridge sends cues and channel levels to Eos over OSC/TCP. In a shared session, camera recognition runs in the browser and microphone audio goes to the bridge over the private HTTPS connection.</p>
+        <p>To map a gesture or phrase to a level, select <strong>Output → Channel level</strong>, enter the channel and percentage, then enable and save the mapping. In <strong>Session</strong>, open the mapping’s console test, choose <strong>Send test level live</strong>, and confirm the visible result before going live.</p>
         <p>For a manual adjustment after confirming Eos and the show, use <strong>Console → Set a channel level</strong> while automatic output is paused.</p>
         <p>For speech troubleshooting, open <strong>Speech → Typed phrase test</strong>. <strong>Check phrase</strong> shows the mapping, and <strong>Send matched output live</strong> runs a separate manual console test. Use the microphone to check recognition.</p>
         <p>Keep one bridge copy running at a time. Starting or reconnecting keeps automatic output paused. A full test with macOS and Eos hardware is still pending.</p>

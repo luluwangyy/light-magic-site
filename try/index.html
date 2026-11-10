@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Try Light Magic with your camera, a spoken phrase, or the controls on the page. The lights are simulated in your browser.">
+  <meta name="theme-color" content="#f5f3ed">
+  <title>Browser rehearsal — Light Magic</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="./rehearsal.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header wrap">
+    <a class="wordmark" href="../">Light Magic<span class="brand-dot" aria-hidden="true"></span></a>
+    <nav aria-label="Main navigation"><a href="../#setup">Set up for Eos <span aria-hidden="true">↗</span></a></nav>
+  </header>
+  <main class="wrap rehearsal" id="main">
+    <div class="rehearsal-intro">
+      <p class="eyebrow">Browser rehearsal</p>
+      <h1>Try Light Magic</h1>
+      <p>Use a gesture or phrase to change the on-screen lights. Start with the buttons, or turn on your camera or microphone.</p>
+    </div>
+
+    <div class="rehearsal-workspace">
+      <section class="stage-panel" aria-labelledby="stage-title">
+        <div class="stage-header">
+          <h2 id="stage-title">Simulated stage</h2>
+          <button id="resetStage" class="button" type="button">Reset lights</button>
+        </div>
+        <div class="stage-scene" aria-hidden="true">
+          <div class="stage-floor"></div>
+          <div class="stage-fixture" data-fixture="1"><span class="lamp"></span><span class="beam"></span><span class="pool"></span></div>
+          <div class="stage-fixture" data-fixture="2"><span class="lamp"></span><span class="beam"></span><span class="pool"></span></div>
+          <div class="stage-fixture" data-fixture="9"><span class="lamp"></span><span class="beam"></span><span class="pool"></span></div>
+        </div>
+        <dl class="fixture-levels" aria-label="Simulated fixture levels">
+          <div><dt>Channel 1</dt><dd data-level="1">0%</dd></div>
+          <div><dt>Channel 2</dt><dd data-level="2">0%</dd></div>
+          <div><dt>Channel 9</dt><dd data-level="9">0%</dd></div>
+        </dl>
+        <div class="stage-result" role="status" aria-atomic="true">
+          <p id="outputLook">Blackout</p>
+          <p id="outputDetail">Choose a trigger to change the lights.</p>
+        </div>
+        <p class="rehearsal-note">This page simulates lighting in the browser. For a physical console, use the local controller.</p>
+      </section>
+
+      <section class="trigger-panel" aria-labelledby="trigger-title">
+        <h2 id="trigger-title">Try a trigger</h2>
+        <div class="gesture-buttons" role="group" aria-label="Simulate a gesture">
+          <button type="button" class="button primary" data-trigger="open-palm">Open palm</button>
+          <button type="button" class="button" data-trigger="fist">Fist</button>
+          <button type="button" class="button" data-trigger="ankh">Ankh</button>
+          <button type="button" class="button" data-trigger="fire">Fire</button>
+        </div>
+        <div class="rehearsal-input">
+          <div class="device-heading">
+            <div><h3>Camera gestures</h3><p id="cameraStatus" class="hint" role="status">Start the camera to try an open palm or fist.</p></div>
+            <button type="button" id="cameraToggle" class="button" aria-describedby="cameraStatus">Start camera</button>
+          </div>
+          <div id="cameraPane" class="camera-pane" hidden>
+            <video id="rehearsalVideo" autoplay muted playsinline aria-label="Local camera preview"></video>
+            <p class="hint">Show your whole hand, hold the gesture briefly, then relax before repeating.</p>
+          </div>
+        </div>
+        <div class="rehearsal-input phrase-input">
+          <div class="device-heading">
+            <div><h3>Spoken phrases</h3><p id="speechStatus" class="hint" role="status">Type below or try on-device speech.</p></div>
+            <button type="button" id="speechToggle" class="button" aria-describedby="speechStatus" disabled>Start microphone</button>
+          </div>
+          <form id="phraseForm">
+            <label for="phrase">Type a phrase</label>
+            <div class="phrase-row">
+              <input id="phrase" name="phrase" type="text" placeholder="Let there be light" maxlength="200" autocomplete="off">
+              <button type="submit" class="button">Match</button>
+            </div>
+          </form>
+          <div class="sample-phrases" role="group" aria-label="Sample phrases">
+            <button type="button" data-phrase="Let there be light">Let there be light</button>
+            <button type="button" data-phrase="Abracadabra">Abracadabra</button>
+            <button type="button" data-phrase="They shall not pass">They shall not pass</button>
+            <button type="button" data-phrase="At my command">At my command</button>
+            <button type="button" data-phrase="Stand down">Stand down</button>
+          </div>
+          <p id="phraseStatus" class="hint phrase-status" role="status"></p>
+        </div>
+      </section>
+    </div>
+
+    <details class="mapping-panel">
+      <summary>Edit a trigger mapping</summary>
+      <p>Assign a sample cue or set the intensity of a single simulated channel. Changes apply to this rehearsal.</p>
+      <form id="mappingForm" class="mapping-form">
+        <div class="mapping-fields">
+          <label>Trigger<select id="mappingTrigger"></select></label>
+          <label>Output<select id="mappingType"><option value="cue">Cue</option><option value="level">Channel level</option></select></label>
+          <div class="destination-fields" id="cueFields"><label>Cue in list 1<select id="mappingCue"></select></label></div>
+          <div class="destination-fields" id="levelFields" hidden>
+            <label>Channel<select id="mappingChannel"><option value="1">1</option><option value="2">2</option><option value="9">9</option></select></label>
+            <label>Level (%)<input id="mappingLevel" type="number" min="0" max="100" step="any" value="30"></label>
+          </div>
+        </div>
+        <div class="mapping-actions">
+          <button class="button primary" type="submit">Save mapping</button>
+          <button class="button" id="tryMapping" type="button">Try saved mapping</button>
+          <p id="mappingStatus" class="hint" role="status"></p>
+        </div>
+      </form>
+    </details>
+    <noscript><p class="rehearsal-note">Enable JavaScript to use the rehearsal controls.</p></noscript>
+  </main>
+  <footer class="site-footer wrap"><span>Light Magic</span><a href="../#setup">Set up the local controller <span aria-hidden="true">↗</span></a></footer>
+  <script type="module" src="./rehearsal.mjs"></script>
+</body>
+</html>
