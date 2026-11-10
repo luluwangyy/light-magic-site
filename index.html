@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#0a0a0c">
   <title>Light Magic — Movement into light</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230a0a0c'/%3E%3Cpath d='M6 25 16 7l10 18Z' fill='none' stroke='%23efd18b' stroke-width='1.5'/%3E%3Ccircle cx='16' cy='17' r='2' fill='%23efd18b'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="./show.css">
+  <link rel="stylesheet" href="./show.css?v=2">
   <script type="module" src="./stage-scene.mjs"></script>
   <script type="module" src="./setup.mjs"></script>
 </head>
@@ -35,16 +35,14 @@
         <div class="stage-shade" aria-hidden="true"></div>
         <div class="stage-content frame">
           <div class="stage-copy">
-            <p class="technical-label stage-kicker"><span class="cue-dot" aria-hidden="true"></span> Live lighting / ETC Eos</p>
             <h1 id="hero-title">Movement<br>into light.</h1>
-            <p class="stage-description">Trigger a cue or set a light level with a gesture, a learned movement, or your voice.</p>
+            <p class="stage-description">Trigger cues and set levels on an ETC Eos lighting console with gestures or your voice.</p>
             <div class="actions">
               <a class="action action-primary" href="./try/">Start rehearsal <span aria-hidden="true">↗</span></a>
               <a class="action action-quiet" href="#setup-options">Live setup <span aria-hidden="true">↓</span></a>
             </div>
           </div>
           <div class="stage-rail">
-            <span class="technical-label">01 / Spotlight</span>
             <button type="button" id="stage-motion" class="replay" hidden>
               <svg viewBox="0 0 20 20" width="17" height="17" fill="none" aria-hidden="true">
                 <path d="M4.7 7.4a5.8 5.8 0 1 1-.2 4.7M4.7 7.4V3.7m0 3.7h3.7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
@@ -57,25 +55,23 @@
 
       <section class="setup frame" id="setup-options" aria-labelledby="setup-title">
         <div class="section-heading">
-          <p class="technical-label">Setup</p>
-          <h2 id="setup-title">Choose a mode</h2>
+          <h2 id="setup-title">Rehearse or go live</h2>
         </div>
         <div class="setup-layout" data-setup-tabs>
           <div class="mode-list" data-setup-tablist aria-label="Setup options" hidden>
             <button class="mode-tab" type="button" id="tab-rehearse" data-setup-tab aria-controls="mode-rehearse">
-              <span class="mode-number" aria-hidden="true">01</span><span>Rehearse</span><span class="mode-lamp" aria-hidden="true"></span>
+              Rehearse
             </button>
             <button class="mode-tab" type="button" id="tab-join" data-setup-tab aria-controls="mode-join">
-              <span class="mode-number" aria-hidden="true">02</span><span>Join venue</span><span class="mode-lamp" aria-hidden="true"></span>
+              Join a session
             </button>
             <button class="mode-tab" type="button" id="tab-bridge" data-setup-tab aria-controls="mode-bridge">
-              <span class="mode-number" aria-hidden="true">03</span><span>Install bridge</span><span class="mode-lamp" aria-hidden="true"></span>
+              Install the bridge
             </button>
           </div>
 
           <div class="mode-panels">
             <section class="mode-panel" id="mode-rehearse" data-setup-panel aria-labelledby="rehearse-title">
-              <p class="technical-label mode-caption"><span class="cue-dot" aria-hidden="true"></span> Browser only</p>
               <h3 id="rehearse-title">Rehearse in your browser</h3>
               <p>Try gestures, spoken phrases, or typed commands on a simulated stage. No download or lighting console required.</p>
               <ol class="signal-path" aria-label="Rehearsal signal path">
@@ -85,17 +81,15 @@
             </section>
 
             <section class="mode-panel" id="mode-join" data-setup-panel aria-labelledby="join-title">
-              <p class="technical-label mode-caption"><span class="cue-dot" aria-hidden="true"></span> Venue network</p>
-              <h3 id="join-title">Join an existing session</h3>
-              <p>Connect to the venue’s network. Ask the operator for the private HTTPS link and sign-in details, then open the link in Chrome or Edge. Allow camera or microphone access if your session uses it.</p>
+              <h3 id="join-title">Join a live session</h3>
+              <p>Join the venue’s network and open the private link from your operator in Chrome or Edge. Sign in and allow camera or microphone access as needed.</p>
               <ol class="signal-path" aria-label="Shared session signal path">
                 <li>Your browser</li><li>Venue bridge</li><li>ETC Eos</li>
               </ol>
-              <p class="mode-note">The venue already runs the bridge. Your computer only needs a browser.</p>
+              <p class="mode-note">The venue runs the bridge. You don’t need to install Light Magic.</p>
             </section>
 
             <section class="mode-panel" id="mode-bridge" data-setup-panel aria-labelledby="bridge-title">
-              <p class="technical-label mode-caption"><span class="cue-dot" aria-hidden="true"></span> Operator setup</p>
               <h3 id="bridge-title">Set up the bridge computer</h3>
               <p>Install Light Magic on the computer connected to Eos. You’ll need Python 3.10 or newer and access to the private GitHub project. For speech on macOS, use Python 3.12 or 3.13.</p>
               <ol class="signal-path" aria-label="Bridge signal path">
@@ -120,13 +114,12 @@
 
     <section class="workflow frame" id="how-it-works" aria-labelledby="workflow-title">
       <div class="section-heading">
-        <p class="technical-label">At the desk</p>
         <h2 id="workflow-title">Going live</h2>
       </div>
       <ol class="workflow-steps">
-        <li><span class="technical-label" aria-hidden="true">01</span><h3>Preview</h3><p>Choose your inputs and check recognition while output is paused.</p></li>
-        <li><span class="technical-label" aria-hidden="true">02</span><h3>Check the desk</h3><p>Confirm the Eos console and show. Test each mapped cue or level and verify the visible result.</p></li>
-        <li><span class="technical-label" aria-hidden="true">03</span><h3>Enable output</h3><p>Go live after the checks. Press <kbd>Esc</kbd> to pause automatic output.</p></li>
+        <li><h3>Preview</h3><p>Choose your inputs and check recognition while output is paused.</p></li>
+        <li><h3>Check the desk</h3><p>Confirm the Eos console and show. Test each mapped cue or level and verify the visible result.</p></li>
+        <li><h3>Enable output</h3><p>Go live after the checks. Press <kbd>Esc</kbd> to pause automatic output.</p></li>
       </ol>
       <details class="console-notes">
         <summary>Console controls and troubleshooting</summary>
