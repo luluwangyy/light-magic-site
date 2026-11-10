@@ -24,7 +24,7 @@
       <div class="hero-copy">
         <p class="eyebrow">A performance tool for ETC Eos</p>
         <h1 id="hero-title">Movement<br>into <em>light.</em></h1>
-        <p class="hero-description">Turn a hand gesture, a learned motion, or a spoken phrase into a lighting cue. Build your mappings, practice them, then take control.</p>
+        <p class="hero-description">Fire a lighting cue or set a channel level with a hand gesture, a learned motion, or a spoken phrase. Build your mappings, then practice them before going live.</p>
         <div class="actions">
           <a class="button primary" href="#setup">Set up Light Magic <span aria-hidden="true">↓</span></a>
           <a class="text-link" href="http://127.0.0.1:8765/">Open local controller <span aria-hidden="true">↗</span></a>
@@ -32,9 +32,9 @@
         <p class="local-note">GitHub Pages hosts this guide. Once Light Magic is running, the local controller link opens it on this computer.</p>
       </div>
       <aside class="input-panel" aria-labelledby="input-title">
-        <p class="panel-heading" id="input-title">Three ways to trigger a cue</p>
+        <p class="panel-heading" id="input-title">Three ways to control the lights</p>
         <div class="input-item"><span class="input-number" aria-hidden="true">01</span><div><h2>A gesture</h2><p>Open palm and closed fist, recognised through your camera.</p></div></div>
-        <div class="input-item"><span class="input-number" aria-hidden="true">02</span><div><h2>Your own motion</h2><p>Record a hand movement, name it, and map it to a cue.</p></div></div>
+        <div class="input-item"><span class="input-number" aria-hidden="true">02</span><div><h2>Your own motion</h2><p>Record a hand movement, name it, and map it to a cue or channel level.</p></div></div>
         <div class="input-item"><span class="input-number" aria-hidden="true">03</span><div><h2>A spoken phrase</h2><p>Match a saved phrase using offline speech recognition.</p></div></div>
         <p class="panel-footnote">Use camera, speech, or both together.</p>
       </aside>
@@ -43,14 +43,14 @@
     <section class="section workflow" id="how-it-works" aria-labelledby="workflow-title">
       <div class="section-intro"><p class="eyebrow">From practice to performance</p><h2 id="workflow-title">A clear path to live.</h2></div>
       <ol class="workflow-steps">
-        <li><h3>Preview</h3><p>Choose your inputs and start a session. Check recognition without automatic cue output.</p></li>
-        <li><h3>Check</h3><p>Confirm the intended Eos console and show. Test each cue destination and confirm what you see.</p></li>
+        <li><h3>Preview</h3><p>Choose your inputs and start a session. Check recognition without sending lighting commands.</p></li>
+        <li><h3>Check</h3><p>Confirm the intended Eos console and show. Test each mapped cue or channel level and confirm what you see.</p></li>
         <li><h3>Go live</h3><p>Enable automatic output when the checks are complete. Pause output at any time with Escape.</p></li>
       </ol>
     </section>
 
     <section class="section setup" id="setup" aria-labelledby="setup-title">
-      <div class="section-intro"><p class="eyebrow">Get started</p><h2 id="setup-title">Your laptop.<br>Your lighting desk.</h2><p>Use Chrome or Edge and Python 3.10 or newer. For speech on macOS, use Python 3.12 or 3.13. Connect your laptop to Eos when you’re ready to send lighting cues.</p><a class="button primary" href="https://github.com/luluwangyy/light-magic/archive/refs/heads/revised.zip">Download the project <span aria-hidden="true">↗</span></a><p class="access-note">The source repository is private. Sign in to GitHub with an account that has access to download it.</p></div>
+      <div class="section-intro"><p class="eyebrow">Get started</p><h2 id="setup-title">Your laptop.<br>Your lighting desk.</h2><p>Use Chrome or Edge and Python 3.10 or newer. For speech on macOS, use Python 3.12 or 3.13. Connect your laptop to Eos when you’re ready to control the lights.</p><a class="button primary" href="https://github.com/luluwangyy/light-magic/archive/refs/heads/revised.zip">Download the project <span aria-hidden="true">↗</span></a><p class="access-note">The source repository is private. Sign in to GitHub with an account that has access to download it.</p></div>
       <ol class="setup-steps">
         <li><div><h3>Download and extract</h3><p>Download the ZIP and extract it to a folder on your computer.</p></div></li>
         <li><div><h3>Launch the app</h3><p>On Windows, open <code>Start Movement Gesture.bat</code>. On macOS, open <code>Start Movement Gesture.command</code> or run <code>sh "Start Movement Gesture.command"</code> in Terminal from the extracted folder.</p></div></li>
@@ -61,7 +61,13 @@
 
     <section class="operating-note" aria-labelledby="local-title">
       <h2 id="local-title">Built to run locally.</h2>
-      <div><p>Camera and microphone processing stay on the laptop. The local Python bridge sends mapped cues to Eos over OSC/TCP.</p><p>Once you confirm Eos and the show, use <strong>Console → Set a channel level</strong> while automatic output is paused.</p><p>For speech troubleshooting, open <strong>Speech → Typed phrase test</strong> in the local controller. <strong>Check phrase</strong> shows a mapping without output. <strong>Send matched cue live</strong> is a separate manual test. Typing does not verify microphone recognition.</p><p>Keep one bridge copy running at a time. Starting or reconnecting keeps automatic output paused. A full test with macOS and Eos hardware is still pending.</p></div>
+      <div>
+        <p>Camera and microphone processing stay on the laptop. The local Python bridge sends cues and channel levels to Eos over OSC/TCP.</p>
+        <p>To map a gesture, learned motion, or phrase to a level, select <strong>Output → Channel level</strong>, enter the channel and percentage, then enable and save the mapping. In <strong>Session</strong>, open the mapping’s console test, choose <strong>Send test level live</strong>, and confirm the visible result before going live.</p>
+        <p>For a manual adjustment after confirming Eos and the show, use <strong>Console → Set a channel level</strong> while automatic output is paused.</p>
+        <p>For speech troubleshooting, open <strong>Speech → Typed phrase test</strong>. <strong>Check phrase</strong> shows the mapping, and <strong>Send matched output live</strong> runs a separate manual console test. Use the microphone to check recognition.</p>
+        <p>Keep one bridge copy running at a time. Starting or reconnecting keeps automatic output paused. A full test with macOS and Eos hardware is still pending.</p>
+      </div>
     </section>
   </main>
 
