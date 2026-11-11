@@ -1,133 +1,131 @@
-import {createCameraRecognition,createSpeechRecognition} from './recognition.mjs?v=hand-tracking';
+import {createCameraRecognition, createSpeechRecognition} from './recognition.mjs?v=hand-tracking';
+import {createStagePreview} from './stage-preview.mjs';
+import {mountSessionLayout} from './session-layout.mjs';
 
-const $=id=>document.getElementById(id);
-const channels=[1,2,9];
-const warm='255 237 203';
-const cues=new Map([
-  ['1',{name:'Reveal',levels:[100,82,92],colors:[warm,'255 246 224',warm]}],
-  ['2',{name:'Blackout',levels:[0,0,0],colors:[warm,warm,warm]}],
-  ['3',{name:'Fire',levels:[80,100,56],colors:['255 111 47','255 157 65','241 62 42']}],
-  ['4',{name:'Halo',levels:[30,100,30],colors:['170 208 255','255 236 164','170 208 255']}],
-  ['5',{name:'Transformation',levels:[89,40,92],colors:['200 111 255','132 200 255','145 127 250']}],
-  ['6',{name:'Red barrier',levels:[90,14,90],colors:['255 65 74','255 97 99','255 65 74']}],
-  ['7',{name:'Command',levels:[12,100,12],colors:['184 210 255','247 243 228','184 210 255']}]
-]);
-const gestures=[
-  ['open-palm','Open palm','1'],['fist','Fist','2'],['ankh','Ankh','4'],['fire','Fire','3']
+const $ = id => document.getElementById(id);
+const stage = createStagePreview($('stagePreview'));
+const layout = mountSessionLayout($('main'));
+layout.setView('session');
+
+async function readAsset(name) {
+  const response = await fetch(new URL('./assets/' + name, import.meta.url));
+  if (!response.ok) throw Error('The stage assets could not load.');
+  return response.json();
+}
+let design, fixtures;
+try {
+  [design, fixtures] = await Promise.all([
+    readAsset('movement-lab-channel-looks.json'),
+    readAsset('movement-lab-fixtures.json'),
+  ]);
+} catch (error) {
+  $('loadStatus').textContent = error.message + ' Refresh to retry.';
+  throw error;
+}
+const looks = new Map(design.looks.map(look => [look.id, look]));
+const channels = fixtures.fixtures.map(fixture => Number(fixture.channel));
+const gestures = [
+  ['open-palm', 'Open palm', 'reveal'], ['fist', 'Fist', 'blackout'],
+  ['ankh', 'Ankh', 'halo'], ['fire', 'Fire', 'fire'],
 ];
-const phrases=[
-  ['light','Let there be light','1'],['abracadabra','Abracadabra','5'],
-  ['barrier','They shall not pass','6'],['command','At my command','7'],['stand-down','Stand down','2']
+const phrases = [
+  ['light', 'Let there be light', 'white', 'White lights'],
+  ['abracadabra', 'Abracadabra', 'transformation', 'Magic shift', 'Abra cadabra', 'Abra kadabra'],
+  ['barrier', 'They shall not pass', 'barrier', 'Shield up'],
+  ['command', 'At my command', 'command', 'Take command'],
+  ['stand-down', 'Stand down', 'blackout', 'Lights out'],
 ];
-const labels=new Map([...gestures,...phrases].map(([id,label])=>[id,label]));
-const mappings=new Map([...gestures,...phrases].map(([id,,cue])=>[id,{type:'cue',cue,channel:9,level:30}]));
-const fixtures=new Map(channels.map(channel=>[channel,{
-  view:document.querySelector(`[data-fixture="${channel}"]`),
-  readout:document.querySelector(`[data-level="${channel}"]`)
-}]));
+const entries = [...gestures, ...phrases];
+const labels = new Map(entries.map(([id, label]) => [id, label]));
+const mappings = new Map(entries.map(([id, , look]) => [id, {type: 'look', look, channel: 9, level: 30}]));
+const cueNumbers = new Map([...looks.keys()].map((id, index) => [id, index + 1]));
 
-function setFixture(channel,level,color){
-  const {view,readout}=fixtures.get(channel);
-  if(color)view.style.setProperty('--color',color);
-  view.style.setProperty('--strength',String(level/100));
-  readout.textContent=level+'%';
-}
-function showCue(cue){
-  const look=cues.get(cue);
-  channels.forEach((channel,index)=>setFixture(channel,look.levels[index],look.colors[index]));
-  return look.name;
-}
-const command=mapping=>mapping.type==='level'?`Chan ${mapping.channel} @ ${mapping.level}`:`List 1 · Cue ${mapping.cue}`;
-function fire(id,source){
-  const mapping=mappings.get(id);
-  if(!mapping)return;
-  let look;
-  if(mapping.type==='level'){
-    setFixture(mapping.channel,mapping.level);
-    look=`Channel ${mapping.channel} at ${mapping.level}%`;
-  }else look=showCue(mapping.cue);
-  $('outputLook').textContent=look;
-  $('outputDetail').textContent=`${command(mapping)} · ${labels.get(id)} · ${source}`;
-}
-for(const button of document.querySelectorAll('[data-trigger]')){
-  button.onclick=()=>fire(button.dataset.trigger,'Gesture button');
-}
-$('resetStage').onclick=()=>{
-  showCue('2');
-  $('outputLook').textContent='Blackout';
-  $('outputDetail').textContent='Lights reset. Choose a trigger to change them.';
-};
-
-const normalize=text=>text.normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim();
-const phraseMatches=new Map(phrases.map(([id,phrase])=>[normalize(phrase),id]));
-function matchPhrase(text,source){
-  const normalized=normalize(text);
-  const id=phraseMatches.get(normalized)||(normalized.startsWith('at my command ')?'command':null);
-  if(!id){
-    $('phraseStatus').textContent=normalized?`No match for “${text.trim()}”. Try one of the sample phrases.`:'Type a phrase or choose a sample.';
+function showLook(mapping, input, source) {
+  const look = looks.get(mapping.look);
+  if (mapping.type === 'level') {
+    stage.render({source, input, target: {output_type: 'channel_level', channel: mapping.channel, level: mapping.level}});
     return;
   }
-  $('phraseStatus').textContent=`Matched “${labels.get(id)}”.`;
-  fire(id,source);
+  const name = mapping.type === 'cue' ? `Cue ${cueNumbers.get(look.id)} · ${look.name}` : look.name;
+  stage.render({source, input, name, target: {output_type: 'channel_look', channels: look.channels}});
 }
-$('phraseForm').addEventListener('submit',event=>{
+function fire(id, source, input = labels.get(id)) {
+  const mapping = mappings.get(id);
+  if (mapping) showLook(mapping, input, source);
+}
+for (const button of document.querySelectorAll('[data-trigger]')) {
+  button.onclick = () => fire(button.dataset.trigger, 'manual');
+}
+$('resetStage').onclick = () => showLook({type: 'look', look: 'blackout'}, 'Reset lights', 'manual');
+
+const normalize = text => text.normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+const phraseMatches = new Map(phrases.flatMap(([id, phrase, , ...aliases]) =>
+  [phrase, ...aliases].map(text => [normalize(text), id])));
+function matchPhrase(text, source) {
+  const normalized = normalize(text);
+  const id = phraseMatches.get(normalized) || (normalized.startsWith('at my command ') ? 'command' : null);
+  $('phraseStatus').textContent = id ? `Matched “${labels.get(id)}”.` :
+    normalized ? `No match for “${text.trim()}”. Try a short command.` : 'Type a phrase or choose a short command.';
+  if (id) fire(id, source, text.trim());
+}
+$('phraseForm').addEventListener('submit', event => {
   event.preventDefault();
-  matchPhrase($('phrase').value,'Typed phrase');
+  matchPhrase($('phrase').value, 'speech');
 });
-$('phrase').addEventListener('input',()=>{$('phraseStatus').textContent='';});
-for(const button of document.querySelectorAll('[data-phrase]')){
-  button.onclick=()=>{
-    $('phrase').value=button.dataset.phrase;
-    matchPhrase(button.dataset.phrase,'Sample phrase');
+$('phrase').addEventListener('input', () => { $('phraseStatus').textContent = ''; });
+for (const button of document.querySelectorAll('[data-phrase]')) {
+  button.onclick = () => {
+    $('phrase').value = button.dataset.phrase;
+    matchPhrase(button.dataset.phrase, 'speech');
   };
 }
 
-const triggerSelect=$('mappingTrigger'),typeSelect=$('mappingType'),cueSelect=$('mappingCue');
-for(const [name,items] of [['Gestures',gestures],['Phrases',phrases]]){
-  const group=document.createElement('optgroup');
-  group.label=name;
-  for(const [id,label] of items)group.append(new Option(label,id));
+const triggerSelect = $('mappingTrigger'), typeSelect = $('mappingType'), cueSelect = $('mappingCue');
+for (const [name, items] of [['Gestures', gestures], ['Phrases', phrases]]) {
+  const group = document.createElement('optgroup');
+  group.label = name;
+  for (const [id, label] of items) group.append(new Option(label, id));
   triggerSelect.append(group);
 }
-for(const [number,look] of cues)cueSelect.append(new Option(`Cue ${number} · ${look.name}`,number));
-function showDestination(){
-  const level=typeSelect.value==='level';
-  $('cueFields').hidden=level;
-  $('levelFields').hidden=!level;
-  cueSelect.disabled=level;
-  $('mappingChannel').disabled=!level;
-  $('mappingLevel').disabled=!level;
+$('mappingChannel').replaceChildren(...channels.map(channel => new Option(channel, channel)));
+function showDestination(selected = cueSelect.value) {
+  const type = typeSelect.value;
+  const level = type === 'level';
+  $('cueFields').hidden = level;
+  $('levelFields').hidden = !level;
+  $('cueFieldLabel').textContent = type === 'cue' ? 'Sample cue' : 'Stage look';
+  if (!level) {
+    cueSelect.replaceChildren(...design.looks.map(look =>
+      new Option(type === 'cue' ? `Cue ${cueNumbers.get(look.id)} · ${look.name}` : look.name, look.id)));
+    if (looks.has(selected)) cueSelect.value = selected;
+  }
 }
-function showMapping(){
-  const mapping=mappings.get(triggerSelect.value);
-  typeSelect.value=mapping.type;
-  cueSelect.value=mapping.cue;
-  $('mappingChannel').value=String(mapping.channel);
-  $('mappingLevel').value=String(mapping.level);
-  showDestination();
-  $('mappingStatus').textContent=`Assigned to ${command(mapping)}.`;
+function showMapping() {
+  const mapping = mappings.get(triggerSelect.value);
+  typeSelect.value = mapping.type;
+  $('mappingChannel').value = String(mapping.channel);
+  $('mappingLevel').value = String(mapping.level);
+  showDestination(mapping.look);
+  $('mappingStatus').textContent = '';
 }
-triggerSelect.addEventListener('change',showMapping);
-typeSelect.addEventListener('change',showDestination);
-$('mappingForm').addEventListener('input',event=>{
-  if(event.target!==triggerSelect)$('mappingStatus').textContent='Save changes to use the new mapping.';
-});
-$('mappingForm').addEventListener('submit',event=>{
+triggerSelect.addEventListener('change', showMapping);
+typeSelect.addEventListener('change', () => showDestination());
+$('mappingForm').addEventListener('submit', event => {
   event.preventDefault();
-  const id=triggerSelect.value,type=typeSelect.value,mapping={...mappings.get(id),type,cue:cueSelect.value};
-  if(type==='level'){
-    const raw=$('mappingLevel').value,level=Number(raw),channel=Number($('mappingChannel').value);
-    if(raw===''||!Number.isFinite(level)||level<0||level>100||!fixtures.has(channel)){
-      $('mappingStatus').textContent='Choose a channel and enter a level from 0 to 100%.';
+  const id = triggerSelect.value;
+  const mapping = {...mappings.get(id), type: typeSelect.value, look: cueSelect.value};
+  if (mapping.type === 'level') {
+    const level = $('mappingLevel').valueAsNumber, channel = Number($('mappingChannel').value);
+    if (!Number.isFinite(level) || level < 0 || level > 100 || !channels.includes(channel)) {
+      $('mappingStatus').textContent = 'Choose a channel and a level from 0 to 100%.';
       return;
     }
-    Object.assign(mapping,{level,channel});
+    Object.assign(mapping, {level, channel});
   }
-  mappings.set(id,mapping);
-  $('mappingStatus').textContent=`Saved ${labels.get(id)} → ${command(mapping)}.`;
+  mappings.set(id, mapping);
+  $('mappingStatus').textContent = `Saved “${labels.get(id)}” for this rehearsal.`;
 });
-$('tryMapping').onclick=()=>fire(triggerSelect.value,'Mapping test');
-triggerSelect.value='open-palm';
+$('tryMapping').onclick = () => fire(triggerSelect.value, 'manual');
 showMapping();
 
 function bindDevice({button,status,adapter,label,available=true,unavailable,onActive=()=>{}}){
@@ -201,10 +199,10 @@ function drawHand(landmarks){
     handContext.moveTo(...points[start]);
     for(const index of rest)handContext.lineTo(...points[index]);
   }
-  handContext.strokeStyle='#173326';
+  handContext.strokeStyle='#151515';
   handContext.lineWidth=radius*1.6;
   handContext.stroke();
-  handContext.strokeStyle='#d7f6c8';
+  handContext.strokeStyle='#f4f4f4';
   handContext.lineWidth=radius*.75;
   handContext.stroke();
   handContext.beginPath();
@@ -212,9 +210,9 @@ function drawHand(landmarks){
     handContext.moveTo(x+radius,y);
     handContext.arc(x,y,radius,0,2*Math.PI);
   }
-  handContext.fillStyle='#e6f8cd';
+  handContext.fillStyle='#fff';
   handContext.fill();
-  handContext.strokeStyle='#173326';
+  handContext.strokeStyle='#151515';
   handContext.lineWidth=radius*.55;
   handContext.stroke();
 }
@@ -222,7 +220,7 @@ function drawHand(landmarks){
 let cameraControl,speechControl;
 const camera=createCameraRecognition({
   video,
-  onGesture:({gesture})=>{if(cameraControl?.isActive())fire(gesture,'Camera');},
+  onGesture:({gesture})=>{if(cameraControl?.isActive())fire(gesture,'camera');},
   onLandmarks:drawHand,
   onStatus:text=>cameraControl?.notice(text),
   onError:text=>cameraControl?.fail(text)
@@ -231,10 +229,10 @@ cameraControl=bindDevice({
   button:$('cameraToggle'),status:$('cameraStatus'),adapter:camera,label:'Camera',
   available:!!navigator.mediaDevices?.getUserMedia,
   unavailable:'Camera access is unavailable here. Try the gesture buttons.',
-  onActive:active=>{$('cameraPane').hidden=!active;}
+  onActive:active=>{$('cameraNote').textContent=active?'Camera on':'Camera off';}
 });
 const speech=createSpeechRecognition({
-  onText:text=>{if(speechControl?.isActive())matchPhrase(text,'Microphone');},
+  onText:text=>{if(speechControl?.isActive())matchPhrase(text,'speech');},
   onStatus:text=>speechControl?.notice(text),
   onError:text=>speechControl?.fail(text)
 });
