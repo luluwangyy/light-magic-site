@@ -23,10 +23,10 @@ The camera and microphone feed gesture and speech recognition. The controller lo
 
 ## Use it with an ETC Eos console
 
-[Download the current controller](https://luluwangyy.github.io/light-magic-site/downloads/light-magic-controller.zip) and extract it on the computer connected to the console’s network. Version **2026.11.19** includes the local camera models, stage preview, cue assignments, and diagnostics. [Browse the source](controller/).
+[Open the download page](https://luluwangyy.github.io/light-magic-site/download/) and click **Download Light Magic**. No GitHub account or clone is needed. The complete ZIP contains the controller, camera models, standard English speech model, 3D stage preview and Mac/Windows setup launchers. [Browse the source](controller/).
 
-1. Install Python 3.12. On Windows, open **Start Movement Gesture.bat**. On macOS, run `sh "Start Movement Gesture.command"` from the controller folder.
-2. For voice input, run the matching **Setup speech recognition** script and restart the controller. The setup needs internet access. Recognition runs offline afterward.
+1. Extract the entire ZIP and open **START HERE.html**. Install 64-bit Python 3.12 using the official installer linked on the download page.
+2. Double-click **Set up Light Magic.bat** on Windows or **Set up Light Magic.command** on Mac. Stay online for first setup; it installs the speech packages and starts the controller. Later, use **Start Movement Gesture** for normal offline startup.
 3. On the bridge computer, open `http://127.0.0.1:8765/` in Chrome or Edge. Choose camera, speech, or both in **Session**, then start a rehearsal to check recognition.
 4. In **Cue sheet**, assign each trigger to an existing Eos cue or channel action. In **Console**, enter the desk’s IP address, TCP port, and OSC framing. Use **Test connection**, confirm the show, and verify each mapped output at the desk before choosing **Go live**. Press **Esc** or **Pause output** to stop new commands.
 

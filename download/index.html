@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Download the complete Light Magic controller for Mac and Windows, with camera and standard speech models included.">
+  <title>Download Light Magic</title>
+  <link rel="stylesheet" href="./download.css">
+  <script type="module" src="./download.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#main" data-copy="skip">Skip to download</a>
+  <header>
+    <a class="brand" href="../">Light Magic</a>
+    <nav aria-label="Navigation">
+      <a href="../try/" data-copy="rehearsal">Browser rehearsal</a>
+      <button id="language" type="button" aria-label="Switch language">中文</button>
+    </nav>
+  </header>
+  <main id="main">
+    <section class="intro" aria-labelledby="title">
+      <h1 id="title" data-copy="title">Light Magic,<br>on your computer.</h1>
+      <p class="lead" data-copy="intro">The full controller for camera, voice and real Eos lighting. Download one folder for Mac or Windows.</p>
+      <a class="download" id="download" href="../downloads/light-magic-controller.zip" download="Light-Magic.zip">
+        <span data-copy="download">Download Light Magic</span><span aria-hidden="true">↓</span>
+      </a>
+      <p class="metadata" id="release" aria-live="polite">Mac + Windows · Version 2026.11.19</p>
+      <p class="note" data-copy="account">No GitHub account or clone needed. Extract the ZIP before opening anything inside.</p>
+      <p id="downloadStatus" role="status"></p>
+    </section>
+
+    <section class="steps" aria-labelledby="start-title">
+      <h2 id="start-title" data-copy="start">First time on this computer</h2>
+      <ol>
+        <li>
+          <div class="step-content">
+            <h3 data-copy="extractTitle">Download and extract</h3>
+            <p data-copy="extract">Save the ZIP, then extract the complete Light-Magic folder into Documents or another writable folder. Open START HERE.html inside for these instructions offline.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h3 data-copy="pythonTitle">Install Python 3.12, once</h3>
+            <p data-copy="python">Skip this if 64-bit Python 3.12 is already installed. Choose the official installer for your computer; finish its installation before the next step.</p>
+            <div class="links">
+              <a href="https://www.python.org/ftp/python/3.12.10/python-3.12.10-macos11.pkg" data-copy="macPython">Python for Mac ↗</a>
+              <a href="https://www.python.org/ftp/python/3.12.10/python-3.12.10-amd64.exe" data-copy="windowsPython">Python for Windows ↗</a>
+            </div>
+            <p class="note" data-copy="pythonDetail">The Mac installer supports Intel and Apple Silicon. The Windows installer is for 64-bit Intel/AMD PCs. Python is installed separately from the Light Magic ZIP.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h3 data-copy="setupTitle">Open the setup launcher</h3>
+            <div class="platforms">
+              <div><p class="platform-name">Mac</p><code>Set up Light Magic.command</code></div>
+              <div><p class="platform-name">Windows</p><code>Set up Light Magic.bat</code></div>
+            </div>
+            <p data-copy="setup">Double-click the file for your computer. Stay online and keep its window open while it installs the voice packages. It then opens the controller automatically.</p>
+            <p class="note" data-copy="macHelp">If macOS will not launch the .command file, open Terminal in the extracted folder and run: sh "Set up Light Magic.command".</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h3 data-copy="openTitle">Open your session</h3>
+            <p><span data-copy="open">Use Chrome or Edge on that computer and open </span><a href="http://127.0.0.1:8765/#session">http://127.0.0.1:8765/#session</a>.</p>
+            <p data-copy="live">Start rehearsal to check the inputs. For real lights, connect this computer to Eos over Ethernet, enter the desk’s IP and confirm the console session before Go live.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="returning" aria-labelledby="return-title">
+      <h2 id="return-title" data-copy="returnTitle">Next time</h2>
+      <p data-copy="return">Open Start Movement Gesture.command on Mac or Start Movement Gesture.bat on Windows. The installed models run offline; you do not need to repeat setup.</p>
+    </section>
+
+    <section class="details" aria-label="Download details">
+      <details>
+        <summary data-copy="includedTitle">What is in the download?</summary>
+        <p data-copy="included">The full controller source, camera models, the standard English speech model, the Movement Lab 3D preview, Mac and Windows launchers, and an offline start guide. First-time setup installs the Python voice packages online. The larger Enhanced speech model is optional and installs separately.</p>
+      </details>
+      <details>
+        <summary data-copy="savedTitle">Can I bring my current cue mappings?</summary>
+        <p data-copy="saved">Yes. Close Light Magic on both computers, then copy profile.json into the new Light-Magic folder. For learned motions, also copy custom-motions.json. Your personal settings are not part of the public download. Confirm the console and devices again on the new computer.</p>
+      </details>
+      <details>
+        <summary data-copy="browserTitle">Can I try it without installing?</summary>
+        <p><span data-copy="browser">The browser rehearsal simulates the lights without installing anything. To send real Eos commands, run the controller on a computer connected to the console.</span> <a href="../try/" data-copy="rehearsal">Browser rehearsal</a></p>
+      </details>
+      <details>
+        <summary data-copy="checksTitle">Version and download verification</summary>
+        <p id="commit"></p>
+        <p>SHA-256 <code id="checksum">—</code></p>
+        <p><a href="../downloads/release.json" data-copy="manifest">Download manifest</a> · <a href="https://github.com/luluwangyy/light-magic-site/tree/main/controller" data-copy="source">Source and full instructions ↗</a></p>
+      </details>
+      <p class="note" data-copy="tested">The Windows controller and automated tests have been checked. A physical Mac and the venue’s Eos setup still need an on-site check.</p>
+    </section>
+  </main>
+  <footer><span>Light Magic</span><a href="../" data-copy="back">Back to the project ↗</a></footer>
+</body>
+</html>

@@ -2,15 +2,19 @@
 
 Light Magic connects hand gestures, body poses and spoken phrases to an ETC Eos lighting console. I built it for *How to Make the Air Obey* at Barnard’s Movement Lab. The camera, microphone and cue sheet run in a browser. A local Python bridge sends lighting commands over Ethernet.
 
-[Try the browser rehearsal](https://luluwangyy.github.io/light-magic-site/try/) · [Download the controller](https://luluwangyy.github.io/light-magic-site/downloads/light-magic-controller.zip) · [Project and videos](https://luluwangyy.github.io/lulu-wang-creative-tech-portfolio/projects/light-magic.html)
+[Try the browser rehearsal](https://luluwangyy.github.io/light-magic-site/try/) · [Download and installation](https://luluwangyy.github.io/light-magic-site/download/) · [Project and videos](https://luluwangyy.github.io/lulu-wang-creative-tech-portfolio/projects/light-magic.html)
 
 ## Start on a PC or Mac
 
-Extract the download and install Python 3.12. On Windows, open **Start Movement Gesture.bat**. On macOS, open a terminal in the extracted folder and run `sh "Start Movement Gesture.command"`. Keep the launcher running.
+Download the complete ZIP from the [download page](https://luluwangyy.github.io/light-magic-site/download/) and extract the whole folder. Open **START HERE.html** for instructions in English and Chinese. No GitHub account or clone is needed.
+
+Install 64-bit Python 3.12 using the official installer linked on the download page. For first-time setup, double-click **Set up Light Magic.bat** on Windows or **Set up Light Magic.command** on macOS. Stay online and keep its window open. It creates a local Python environment, installs the speech packages and starts the controller. If macOS cannot launch the file, open Terminal in the extracted folder and run `sh "Set up Light Magic.command"`.
+
+After setup, use **Start Movement Gesture.bat** on Windows or **Start Movement Gesture.command** on macOS. Keep the launcher running while using the controller. Installed recognition models work offline.
 
 Open `http://127.0.0.1:8765/#session` in Chrome or Edge. Choose Camera, Speech only, or Camera + speech, then **Start rehearsal**. Allow camera and microphone access. The stage preview shows the saved lighting action. The **Try a mapping** buttons let you inspect a mapping independently of recognition.
 
-For speech, run **Setup speech recognition.bat** on Windows or `sh "Setup speech recognition.command"` on macOS. Setup downloads the offline models. Restart the controller afterward. The short commands “White lights,” “Magic shift,” “Shield up,” “Take command,” and “Lights out” use the corresponding show phrase’s mapping.
+The full ZIP includes the standard English speech model and the camera models. The short commands “White lights,” “Magic shift,” “Shield up,” “Take command,” and “Lights out” use the corresponding show phrase’s mapping. The larger Enhanced speech model is optional: close the controller and rerun the setup launcher with `--enhanced`, or use the existing speech setup script with that argument.
 
 ## Set up the show
 
@@ -47,8 +51,10 @@ A completed TCP write records what the bridge sent. Verify the cue and fixture r
 
 Assignments and device settings live in `profile.json`; learned motions live in `custom-motions.json`. To move your setup, copy those files into the extracted controller folder on the other computer while it is stopped. Start the controller there, select the available devices and confirm the new console session.
 
-The download includes the source, camera models and preview assets. Speech models install separately. For remote browser control through one bridge computer, see [shared live control](docs/shared-live-control.md).
+The complete download includes the source, camera models, standard English speech model, preview assets and setup launchers. Python and platform-specific speech packages install separately during first-time setup. The optional Enhanced model downloads separately. The plain source checkout does not include speech model weights. For remote browser control through one bridge computer, see [shared live control](docs/shared-live-control.md).
 
 ## Development
 
 Run `python -m unittest discover -s tests -v` and each `tests/*.mjs` file with Node.js. Tests use simulated consoles and do not establish physical fixture behavior. Third-party camera assets and checksums are listed in [the camera manifest](web/assets/manifest.json). Offline speech model sources are listed in [the Standard](speech-model.json) and [Enhanced](speech-enhanced-model.json) manifests.
+
+To rebuild the public download from a committed version, run `python tools/build_download.py --speech-archive /path/to/vosk-model-small-en-us-0.15.zip --output /path/to/downloads/light-magic-controller.zip`. It verifies model checksums, excludes local settings and creates the ZIP, download manifest and checksum file. Mac launchers retain executable permissions in the ZIP.

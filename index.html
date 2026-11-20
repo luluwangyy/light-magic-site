@@ -23,6 +23,7 @@
     </a>
     <nav aria-label="Main navigation">
       <a href="./try/">Rehearsal</a>
+      <a href="./download/">Download</a>
       <a href="#setup-options">Setup</a>
     </nav>
   </header>
@@ -39,7 +40,7 @@
             <p class="stage-description">Trigger cues and set levels on an ETC Eos lighting console with gestures or your voice.</p>
             <div class="actions">
               <a class="action action-primary" href="./try/">Start rehearsal <span aria-hidden="true">↗</span></a>
-              <a class="action action-quiet" href="#setup-options">Live setup <span aria-hidden="true">↓</span></a>
+              <a class="action action-quiet" href="./download/">Download Light Magic <span aria-hidden="true">↓</span></a>
             </div>
           </div>
           <div class="stage-rail">
@@ -95,14 +96,15 @@
               <ol class="signal-path" aria-label="Bridge signal path">
                 <li>Bridge computer</li><li>OSC over TCP</li><li>ETC Eos</li>
               </ol>
-              <a class="action action-primary" href="./downloads/light-magic-controller.zip">Download controller <span aria-hidden="true">↓</span></a>
+              <a class="action action-primary" href="./downloads/light-magic-controller.zip" download="Light-Magic.zip">Download controller <span aria-hidden="true">↓</span></a>
+              <p class="mode-note"><a href="./download/">Mac and Windows installation guide ↗</a></p>
               <details class="install-details">
                 <summary>Installation steps</summary>
                 <ol class="install-steps">
                   <li><strong>Extract the ZIP.</strong> The current controller is a public download. Extract it on the computer that will connect to Eos.</li>
-                  <li><strong>Start the launcher.</strong> Open <code>Start Movement Gesture.bat</code> on Windows or <code>Start Movement Gesture.command</code> on macOS. On macOS you can also run <code>sh "Start Movement Gesture.command"</code> from the extracted folder. Keep the launcher running.</li>
+                  <li><strong>First-time setup.</strong> Install Python 3.12, then open <code>Set up Light Magic.bat</code> on Windows or <code>Set up Light Magic.command</code> on macOS. Stay online and keep the setup window open. It installs the voice packages and starts the controller.</li>
                   <li><strong>Open the controller.</strong> In Chrome or Edge on the bridge computer, open <a href="http://127.0.0.1:8765/">http://127.0.0.1:8765/</a>. This address points to the computer you’re using.</li>
-                  <li><strong>Add speech if needed.</strong> While online, open <code>Setup speech recognition.bat</code> on Windows or <code>Setup speech recognition.command</code> on macOS. Restart Light Magic. Speech recognition runs offline after setup.</li>
+                  <li><strong>Next time.</strong> Use the normal <code>Start Movement Gesture</code> launcher. The full ZIP includes the camera and standard English speech models. The installed controller can recognize inputs offline.</li>
                 </ol>
               </details>
               <p class="mode-note">Version 2026.11.19 · <a href="https://github.com/luluwangyy/light-magic-site/blob/main/controller/docs/shared-live-control.md">Set up HTTPS access for other computers ↗</a></p>

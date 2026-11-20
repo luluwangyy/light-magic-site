@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Start here — Light Magic</title>
+  <style>
+    :root { color-scheme: dark; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background: #101010; color: #eee; }
+    * { box-sizing: border-box; }
+    body { width: min(100% - 40px,760px); margin: 64px auto; }
+    h1 { font-size: 48px; font-weight: 550; letter-spacing: -.05em; margin: 0 0 18px; }
+    h2 { font-size: 26px; font-weight: 550; margin-top: 38px; }
+    p,li { font-size: 18px; line-height: 1.65; color: #bbb; }
+    li { padding: 0 0 16px 8px; }
+    strong,a { color: #eee; }
+    a { text-underline-offset: .2em; }
+    code { font: 15px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace; color: #eee; overflow-wrap: anywhere; }
+    summary { cursor: pointer; font-size: 22px; padding-block: 18px; }
+    .note { font-size: 16px; color: #999; }
+  </style>
+</head>
+<body>
+  <h1>Light Magic</h1>
+  <p>This is the complete controller for Mac and Windows. The full download includes the camera models and standard English speech model. First setup needs internet to install Python voice packages.</p>
+  <h2>First time</h2>
+  <ol>
+    <li><strong>Extract the whole ZIP.</strong> Put the Light-Magic folder in Documents or another writable folder. Keep all its files together.</li>
+    <li><strong>Install 64-bit Python 3.12 if needed.</strong> Choose the official <a href="https://www.python.org/ftp/python/3.12.10/python-3.12.10-macos11.pkg">Mac installer</a> (Intel or Apple Silicon), or <a href="https://www.python.org/ftp/python/3.12.10/python-3.12.10-amd64.exe">Windows installer</a> (Intel/AMD 64-bit). Complete the installer, including pip and the Python launcher on Windows.</li>
+    <li><strong>Double-click the setup file for your computer.</strong><br>Mac: <code>Set up Light Magic.command</code><br>Windows: <code>Set up Light Magic.bat</code><br>Stay online and keep its window open. It creates the local environment, installs speech packages and starts the controller. Do this once.</li>
+    <li><strong>Open <a href="http://127.0.0.1:8765/#session">http://127.0.0.1:8765/#session</a></strong> in Chrome or Edge on this computer. Choose your inputs and Start rehearsal. For real lighting, connect to the Eos network, enter the current desk IP and confirm the console session before Go live.</li>
+  </ol>
+  <p class="note">If macOS cannot launch the .command file, open Terminal in this folder and run <code>sh "Set up Light Magic.command"</code>. If a controller is already running, close its launcher before running setup.</p>
+  <h2>After setup</h2>
+  <p>Use <code>Start Movement Gesture.command</code> on Mac or <code>Start Movement Gesture.bat</code> on Windows. No repeat setup is needed. Keep the launcher window open while using the controller. Installed recognition models work offline.</p>
+  <h2>Bring your saved show</h2>
+  <p>Close the controller on both computers. Copy <code>profile.json</code> from your old controller folder to this one. Copy <code>custom-motions.json</code> too if you have learned motions. These personal files are not included in the public download. Reconfirm the devices and console on the new computer.</p>
+  <p>The optional Enhanced speech model installs separately. See <a href="README.md">README.md</a> for details, live control and troubleshooting.</p>
+  <details lang="zh-CN">
+    <summary>中文使用说明</summary>
+    <ol>
+      <li><strong>先完整解压。</strong>把整个 Light-Magic 文件夹放到“文稿”或其他可写入的位置，不要直接在压缩包里运行脚本。</li>
+      <li><strong>安装一次 64 位 Python 3.12。</strong>上面提供 Mac 和 Windows 的官方安装链接。如果电脑已经安装，可以跳过。</li>
+      <li><strong>双击首次设置脚本。</strong>Mac 用 <code>Set up Light Magic.command</code>，Windows 用 <code>Set up Light Magic.bat</code>。保持联网并保留弹出的窗口，它会自动配置语音依赖，然后启动程序。</li>
+      <li><strong>在这台电脑的 Chrome 或 Edge 打开 <a href="http://127.0.0.1:8765/#session">本地控制器</a>。</strong>先选输入方式并 Start rehearsal。要控制真实灯光，需要连接 Eos 网络、填写控制台 IP，确认会话后再 Go live。</li>
+    </ol>
+    <p>以后 Mac 用 <code>Start Movement Gesture.command</code>；Windows 用 <code>Start Movement Gesture.bat</code>。不需要重复设置，已安装的识别模型可离线使用。</p>
+    <p>要沿用旧电脑的 cue 映射，关闭两边的程序后复制 <code>profile.json</code>。自定义学习动作还需复制 <code>custom-motions.json</code>。这些个人设置不在公开下载包中。</p>
+  </details>
+  <p class="note">Physical Mac operation and the venue’s console connection still need an on-site check.</p>
+  <p><a href="https://luluwangyy.github.io/light-magic-site/download/">Download page and updates ↗</a></p>
+</body>
+</html>

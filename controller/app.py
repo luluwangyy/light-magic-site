@@ -40,7 +40,7 @@ DEFAULT = dict(host='169.254.44.253', port=3032, framing='length', dry_run=True,
         cue={'Open_Palm':'1000','Closed_Fist':'888'}.get(g,''), confidence=.8, hold_s=.6, label=g.replace('_',' ')) for g in GESTURES],
     target_type='chan', target='', parameter='zoom', zoom_min=None, zoom_max=None,
     close=None, far=None, reverse=False, alpha=.2, deadband=.02, rate_hz=12,
-    hand_confidence=.75, hand_loss_s=.8, notes='Lab verified November 2: laptop Ethernet 169.254.40.147 / 255.255.0.0; console 169.254.44.253. TCP 3032 returns readable Eos identity feedback with OSC 1.0 packet length. TCP 3037/3038 time out. Operator mappings: open palm Cue 1000, closed fist Cue 888, list 1. Zoom target and limits unconfirmed. Photos show Rush Par 2 RGBW Zoom 9ch.')
+    hand_confidence=.75, hand_loss_s=.8, notes='Enter the current Eos console IP and verify its OSC settings in Console. Assign cues or channel looks in Cue sheet, then confirm the visible result before live output. The Movement Lab preview uses an archived fixture layout; zoom and color depend on the active Eos patch.')
 
 def number(value, low, high, name):
     if isinstance(value, bool): raise ValueError(name + ': expected number')

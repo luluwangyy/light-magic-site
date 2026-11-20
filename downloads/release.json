@@ -1,0 +1,16 @@
+{
+  "version": "2026.11.19",
+  "source_commit": "c5f8fab799ccce75b51635b2b70d02d659c438ab",
+  "platforms": [
+    "macOS",
+    "Windows"
+  ],
+  "python": "3.12 (64-bit, installed separately)",
+  "speech_model": "vosk-model-small-en-us-0.15",
+  "speech_archive_sha256": "30f26242c4eb449f948e42cb302dd7a686cb29a3423a8367f99ff41780942498",
+  "first_setup_requires_internet": true,
+  "enhanced_speech_included": false,
+  "filename": "light-magic-controller.zip",
+  "bytes": 58746700,
+  "sha256": "8e86436ceb4ec7cd79cb48c794d96d1960a0e9a810203b9d778ed4f3b1a9bd8a"
+}
