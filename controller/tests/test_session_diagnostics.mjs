@@ -30,4 +30,6 @@ report=buildSessionDiagnostics(context);assert.equal(report.recognition.camera.s
 context.state.workflow.rehearsal=true;report=buildSessionDiagnostics(context);assert.equal(report.mode,'rehearsal');assert.ok(report.gate.blockers.some(item=>item.kind==='rehearsal'));
 context.state.workflow.blockers=[{kind:'connect',message:'Failed C:\\private\\path-to-show.esf'}];
 exported=JSON.stringify(exportSessionDiagnostics(context));assert.ok(!exported.includes('path-to-show'));
+context.state.workflow.active=false;context.state.workflow.fresh_gesture_required=true;
+report=buildSessionDiagnostics(context);assert.equal(report.mode,'not started');assert.ok(!report.gate.blockers.some(item=>item.kind==='fresh_neutral'));
 console.log('Session diagnostics: recognition, readiness, queue, actual writes and private export checks passed.');

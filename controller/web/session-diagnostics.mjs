@@ -45,7 +45,7 @@ export function buildSessionDiagnostics(context={}){
  if(speechSelected&&!(context.microphoneRunning??speech.ready))add('speech','Start the microphone for the selected speech input.');
  if(speechSelected&&speech.error)add('speech','Speech recognition needs attention. Check the microphone panel.');
  if(speechSelected&&speech.waiting_for_silence)add('speech_silence','Pause speaking briefly, then say a fresh complete phrase.');
- if(workflow.fresh_gesture_required&&cameraSelected)add('fresh_neutral','Show a relaxed neutral pose before a fresh trigger. Keep it visible for at least 0.3 seconds.');
+ if(workflow.active&&workflow.fresh_gesture_required&&cameraSelected)add('fresh_neutral','Show a relaxed neutral pose before a fresh trigger. Keep it visible for at least 0.3 seconds.');
  if(cameraSelected&&currentCamera&&uncertain)add('tracking',text(observation.method)||'Tracking is uncertain. Keep the performer and hands clearly visible.');
  if(cameraSelected&&currentCamera&&gesture!=='None'&&mapping){
   if(!mapping.enabled)add('mapping','This gesture is recognized, but its saved output mapping is disabled.');
@@ -67,7 +67,7 @@ export function buildSessionDiagnostics(context={}){
   phase:text(diagnostic.phase),gate_reason:text(diagnostic.reason),
   method:currentCamera?text(observation?.method):'',mapping:currentCamera&&mapping?{enabled:!!mapping.enabled,label:outputLabel(mapping)||'Output unassigned',threshold:fraction(mapping.confidence),hold_s:finite(mapping.hold_s)?mapping.hold_s:null}:null};
  const voice={selected:speechSelected,running:!!(context.microphoneRunning??speech.ready),partial:text(speech.partial),last_text:text(speech.last_text),confidence:fraction(speech.last_confidence),outcome:text(speech.last_outcome),waiting_for_silence:!!speech.waiting_for_silence};
- return {build_version:text(state.build_version)||'development',mode:rehearsal?'rehearsal':simulation?'dry run':state.armed?'live':'paused',input_source:source,
+ return {build_version:text(state.build_version)||'development',mode:!workflow.active?'not started':rehearsal?'rehearsal':simulation?'dry run':state.armed?'live':'paused',input_source:source,
   recognition:{camera,speech:voice},gate:{state:blockers.length?'waiting':'ready',label:blockers.length?'What is needed next':'Ready for a fresh enabled trigger',hold,blockers},queue,last_write:lastWrite,
   connection:{connected:!!state.connected,feedback_current:!!state.verified}};
 }
