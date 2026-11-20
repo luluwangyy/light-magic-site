@@ -1,0 +1,21 @@
+{
+	admin off
+	auto_https disable_redirects
+	skip_install_trust
+}
+
+https://{$LIGHT_MAGIC_SHARED_HOST} {
+	bind {$LIGHT_MAGIC_BIND_ADDRESS}
+	tls internal
+	route {
+		@outside_operator_network not remote_ip {$LIGHT_MAGIC_OPERATOR_NETWORK}
+		respond @outside_operator_network 403
+		basic_auth {
+			operator {$LIGHT_MAGIC_PASSWORD_HASH}
+		}
+		reverse_proxy 127.0.0.1:8765 {
+			header_up -Authorization
+			header_up X-Light-Magic-Proxy-Key {$LIGHT_MAGIC_PROXY_KEY}
+		}
+	}
+}

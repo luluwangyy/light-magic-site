@@ -1,0 +1,18 @@
+light-magic development workflow
+
+main: latest lab-tested version.
+revised: ongoing development.
+lab-baseline-2026-11-05: saved starting point; keep this tag unchanged.
+
+Commit useful checkpoints on revised. Review changes in a pull request and run the software tests.
+Confirm the intended cues and connection in the lab before merging into main.
+Tag each accepted lab version so it can be restored in a separate checkout.
+
+Run only one copy at a time: the bridge uses localhost port 8765.
+Normal launch starts disarmed. Start session opens Preview; output needs explicit Go live.
+Logs, local lab settings, learned-motion examples, recovery journals, session snapshots, and secrets are excluded from Git.
+Back up those local settings separately after a lab session.
+Settings, camera selection, and fist/palm calibration are saved in local profile.json, outside Git.
+Live permission and console cue confirmations are never restored from a saved profile.
+
+Validation: python -m unittest discover -s tests -v

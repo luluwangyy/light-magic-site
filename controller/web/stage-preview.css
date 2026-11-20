@@ -1,0 +1,62 @@
+.stage-preview-map-note { margin: 7px 0 15px; }
+.stage-preview-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 12px;
+}
+.stage-preview-controls label { min-width: 0; }
+.stage-preview-controls select { margin-block: 4px 0; }
+.stage-preview-plot {
+  margin-top: 14px;
+  padding: 3px 10px 10px;
+  border-radius: 11px;
+  background: var(--control);
+}
+.stage-preview-plot svg { display: block; width: 100%; height: auto; }
+.stage-preview-floor { fill: #252525; stroke: #888; stroke-width: 1.4; }
+.stage-preview-grid { stroke: #454545; stroke-width: 1; }
+.stage-preview-height { stroke: #a8a8a8; stroke-width: 1.4; stroke-dasharray: 5 5; }
+.stage-preview-fixture { fill: #adadad; }
+.stage-preview-glow { fill: #dedede; }
+.stage-preview-beam-footprint { stroke: #d0d0d0; stroke-opacity: .5; stroke-width: 1; }
+.stage-preview-target, .stage-preview-inspected { fill: none; stroke-width: 3; }
+.stage-preview-target { stroke: #f2f2f2; }
+.stage-preview-target-off { stroke: #939393; stroke-width: 2; stroke-dasharray: 3 3; }
+.stage-preview-fixture-off { fill: #5c5c5c; }
+.stage-preview-inspected { stroke: #ddd; stroke-dasharray: 4 3; }
+.stage-preview-orientation { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); }
+.stage-preview-event {
+  min-height: 72px;
+  margin-top: 20px;
+  overflow-wrap: anywhere;
+}
+.stage-preview-event p { margin: 0 0 4px; }
+.stage-preview-result { display: flex; align-items: baseline; gap: 8px; }
+.stage-preview-swatch {
+  align-self: center;
+  flex: 0 0 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+.stage-preview-event strong { display: block; color: var(--accent-hover); }
+.stage-preview-event .stage-preview-message { margin: 4px 0 0; }
+.stage-preview-fixture-detail { margin: 10px 0 0; }
+.stage-preview-breakdown { margin-top: 18px; }
+.stage-preview-breakdown summary { cursor: pointer; }
+.stage-preview-breakdown dl { margin: 8px 0 0; max-height: 15rem; overflow: auto; }
+.stage-preview-breakdown dl div {
+  display: grid;
+  grid-template-columns: minmax(6rem, auto) 1fr;
+  align-items: baseline;
+  gap: 4px 10px;
+  padding-block: 6px;
+}
+.stage-preview-breakdown dl div:nth-child(even) { background: var(--quiet); border-radius: 6px; }
+.stage-preview-breakdown dt { display: flex; align-items: center; gap: 6px; font-weight: 600; }
+.stage-preview-breakdown dt .stage-preview-swatch { flex-basis: 10px; height: 10px; border-radius: 2px; }
+.stage-preview-breakdown dd { margin: 0; color: var(--muted); overflow-wrap: anywhere; }
+
+@media (max-width: 380px) {
+  .stage-preview-controls { grid-template-columns: 1fr; }
+  .stage-preview-breakdown dl div { grid-template-columns: 1fr; }
+}

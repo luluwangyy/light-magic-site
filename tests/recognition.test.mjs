@@ -63,12 +63,12 @@ test('camera requires stable evidence, emits once, and re-arms after neutral or 
   categoryName = 'Closed_Fist';
   [900, 1000, 1500, 1600, 1700, 1800].forEach(mock.frame);
   assert.equal(mock.gestures.length, 1);
-  [1900, 2000].forEach(mock.frame);
+  [1900, 2000, 2100, 2200].forEach(mock.frame);
   assert.deepEqual(mock.gestures.map(event => event.gesture), ['open-palm', 'fist']);
   categoryName = '';
-  [2100, 2200, 2300, 2400].forEach(mock.frame);
+  [2300, 2400, 2500, 2600].forEach(mock.frame);
   categoryName = 'Closed_Fist';
-  [2500, 2600, 2700, 2800, 2900].forEach(mock.frame);
+  [2700, 2800, 2900, 3000, 3100, 3200, 3300, 3400].forEach(mock.frame);
   assert.deepEqual(mock.gestures.map(event => event.gesture), ['open-palm', 'fist', 'fist']);
   mock.camera.stop();
   mock.camera.stop();
@@ -77,6 +77,61 @@ test('camera requires stable evidence, emits once, and re-arms after neutral or 
   assert.equal(mock.video.srcObject, null);
   assert.equal(mock.frames.size, 0);
   assert.equal(mock.statuses.at(-1), 'Camera stopped');
+});
+
+for(const cadence of [300,400]){
+  test(`shared lab recognition holds all four poses at ${cadence} ms cadence`,async t=>{
+    let categoryName='Open_Palm';
+    const mock=cameraFixture(t,async()=>deviceStream(),async()=>({
+      recognizeForVideo:()=>({gestures:[[{categoryName,score:.95}]],
+        observation:{tracking_uncertain:false,tracking_key:categoryName==='Ankh_Pose'?'body':'hand:1'}}),
+      close(){},
+    }));
+    assert.equal(await mock.camera.start(),true);
+    let now=0;
+    for(const [name,expected] of [['Open_Palm','open-palm'],['Closed_Fist','fist'],['Fire_Gesture','fire'],['Ankh_Pose','ankh']]){
+      categoryName=name;
+      const before=mock.gestures.length;
+      mock.frame(now);mock.frame(now+=cadence);
+      assert.equal(mock.gestures.length,before,'two observations must not bypass the local hold duration');
+      mock.frame(now+=cadence);mock.frame(now+=cadence);
+      assert.equal(mock.gestures.at(-1).gesture,expected);
+      assert.equal(mock.gestures.length,before+1,'a held pose emits once');
+      now+=cadence;
+    }
+    mock.camera.stop();
+  });
+}
+
+test('uncertain tracking never counts as neutral or hold credit and wrist changes restart the hold',async t=>{
+  let categoryName='Open_Palm',observation={tracking_key:'hand:1',tracking_uncertain:false};
+  const mock=cameraFixture(t,async()=>deviceStream(),async()=>({
+    recognizeForVideo:()=>({gestures:[[{categoryName,score:.95}]],observation}),close(){},
+  }));
+  await mock.camera.start();
+  [0,100,200].forEach(mock.frame);
+  categoryName='None';observation={tracking_key:'hand:1',tracking_uncertain:true,tracking_gap:'brief'};
+  mock.frame(300);
+  categoryName='Open_Palm';observation={tracking_key:'hand:1',tracking_uncertain:false};
+  [400,500,600,700].forEach(mock.frame);
+  assert.equal(mock.gestures.length,0,'the brief miss and recovery do not add observed hold time');
+  mock.frame(800);
+  assert.equal(mock.gestures.length,1);
+  categoryName='None';observation={tracking_uncertain:true,tracking_gap:'hard'};
+  [900,1000,1100,1200,1300].forEach(mock.frame);
+  categoryName='Open_Palm';observation={tracking_key:'hand:1',tracking_uncertain:false};
+  [1400,1500,1600,1700,1800,1900,2000].forEach(mock.frame);
+  assert.equal(mock.gestures.length,1,'hiding and returning an open palm cannot rearm it');
+  categoryName='None';observation={tracking_uncertain:false,neutral_kind:'observed',tracking_key:'hand:1'};
+  [2100,2200,2300,2400].forEach(mock.frame);
+  categoryName='Open_Palm';observation={tracking_key:'hand:1',tracking_uncertain:false};
+  [2500,2600,2700].forEach(mock.frame);
+  observation={tracking_key:'hand:2',tracking_uncertain:false};
+  [2800,2900,3000,3100,3200,3300].forEach(mock.frame);
+  assert.equal(mock.gestures.length,1,'the hold cannot combine two wrists');
+  mock.frame(3400);
+  assert.equal(mock.gestures.length,2,'a fresh complete hold after observed neutral may repeat');
+  mock.camera.stop();
 });
 
 test('denied camera permission keeps manual fallback and avoids loading the model', async t => {

@@ -1,0 +1,62 @@
+import assert from 'node:assert/strict';
+import {stageInput,StageInputTracker} from '../web/stage-input.mjs';
+
+const palm={gesture:'Open_Palm',confidence:.96,handCount:2,features:[.2],quality:.94};
+assert.equal(stageInput(palm,{ankh:{active:true,score:.89}}).gesture,'Ankh_Pose');
+const forming=stageInput(palm,{ankh:{forming:true},fire:{active:true,score:.85}});
+assert.equal(forming.gesture,'None');
+assert.equal(forming.tracking_uncertain,true);
+assert.equal(stageInput(palm,{fire:{active:true,score:.85}}).gesture,'Fire_Gesture');
+const fireReport={diagnostics:{poseState:'visible',light:'adequate',personCount:1},
+ fire:{active:true,score:.85,trackingKey:'fire:wrist:1',handIndex:1,wristSide:1}};
+const trackedFire=stageInput({...palm,track_id:7},fireReport);
+assert.equal(trackedFire.tracking_key,'fire:wrist:1','Fire uses its detected wrist rather than another selected palm');
+assert.equal(trackedFire.tracking_uncertain,false);
+assert.ok(!trackedFire.method.includes('rehearsal'));
+assert.equal(stageInput(palm,{diagnostics:{poseState:'multiple people'},ankh:{active:true,score:.96}}).gesture,'None');
+assert.equal(stageInput(palm,{diagnostics:{poseState:'reacquiring'}}).tracking_uncertain,true);
+assert.equal(stageInput({gesture:'None',handCount:0},{diagnostics:{light:'very dark'}}).tracking_uncertain,true);
+const missing={gesture:'None',confidence:0,handCount:0,tracking_uncertain:true};
+const emptyScene={diagnostics:{poseState:'not detected',light:'adequate',sceneClear:true,personCount:0}};
+const performer={diagnostics:{poseState:'visible',light:'adequate',personCount:1,missingWrists:1}};
+const stillHand={...palm,handCount:1,track_id:7};
+const released={gesture:'None',confidence:0,neutral_observed:true,handCount:1,track_id:7};
+
+assert.equal(stageInput(missing,{}).tracking_uncertain,true,'missing sensor evidence cannot prove an empty stage');
+assert.equal(stageInput(missing,emptyScene).neutral_kind,'empty','a clear initial scene is usable');
+assert.equal(stageInput(missing,performer).tracking_uncertain,true,'visible body with hidden hands is occlusion');
+const armsDown={diagnostics:{...performer.diagnostics,armsAtRest:true}};
+assert.equal(stageInput(missing,armsDown,{waitingForNeutral:true}).neutral_kind,'arms-down');
+assert.equal(stageInput(missing,armsDown).tracking_uncertain,true,'arms down does not rearm a repeated gesture');
+assert.equal(stageInput(stillHand,armsDown,{waitingForNeutral:true}).gesture,'Open_Palm','a recognized trigger still blocks neutral');
+assert.equal(stageInput(missing,{diagnostics:{...armsDown.diagnostics,light:'very dark'}},{waitingForNeutral:true}).tracking_uncertain,true);
+assert.equal(stageInput(released,performer).neutral_kind,'observed','a supported non-trigger shape is a release');
+assert.equal(stageInput({...released,neutral_observed:false},performer).tracking_uncertain,true);
+assert.equal(stageInput({...palm,tracking_uncertain:true},performer).gesture,'None','a cached/ambiguous prediction is not current evidence');
+
+const tracker=new StageInputTracker();
+assert.equal(tracker.update(missing,emptyScene,0).neutral_kind,'empty');
+assert.equal(tracker.update(stillHand,performer,100).tracking_key,'hand:7');
+const missed=tracker.update(missing,performer,205);
+assert.deepEqual([missed.gesture,missed.confidence,missed.tracking_gap,missed.neutral_kind,missed.tracking_key],
+ ['None',0,'brief',null,'hand:7'],'a brief miss preserves identity without adding pose or release evidence');
+assert.equal(tracker.update(stillHand,performer,280).tracking_key,'hand:7');
+assert.equal(tracker.update({...released,tracking_uncertain:true,neutral_observed:false},performer,370).tracking_gap,'brief','temporary partial geometry on the same wrist does not destroy the hold');
+assert.equal(tracker.update(missing,performer,481).tracking_gap,'hard','a long gap must reset the hold');
+assert.equal(tracker.update(missing,emptyScene,560).tracking_uncertain,true,'even prolonged disappearance cannot repeat a held gesture');
+assert.equal(tracker.update({...released,track_id:8},performer,640).neutral_kind,null,'the other hand relaxing does not release the hidden one');
+assert.equal(tracker.update(released,performer,720).neutral_kind,'observed');
+tracker.update(stillHand,performer,800);
+assert.equal(tracker.update({...missing,tracking_conflict:true},performer,880).tracking_gap,'hard','conflicts never bridge');
+assert.equal(tracker.update(missing,performer,930).tracking_gap,'hard');
+tracker.reset();
+assert.equal(tracker.update(missing,emptyScene,1000).neutral_kind,'empty');
+const rightWrist={...performer,result:{wristSides:[1]}};
+tracker.update({...stillHand,index:0},rightWrist,1100);
+assert.equal(tracker.update({...released,index:0,track_id:12},rightWrist,1500).neutral_kind,'observed','the same observed anatomical wrist may release after its track ID changes');
+tracker.reset();
+assert.equal(tracker.update({...palm,track_id:7},fireReport,2000).gesture,'Fire_Gesture');
+assert.equal(tracker.update(missing,performer,2100).tracking_key,'fire:wrist:1','a brief Fire miss retains only wrist identity');
+assert.equal(tracker.update(missing,performer,2100).gesture,'None','a missing Fire hand never provides positive cue evidence');
+assert.equal(tracker.update(missing,performer,2250).tracking_gap,'hard','a sustained Fire miss cannot bridge');
+console.log('PASS: stage priority, observed release, and no cue evidence from tracking gaps or hidden hands.');

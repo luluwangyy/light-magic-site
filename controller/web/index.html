@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><meta name="theme-color" content="#0c0c0c"><title>Light Magic</title><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="stage-preview.css"></head><body>
+<a class="skip-link" href="#appMain">Skip to workspace</a>
+<div class="masthead">
+<header><a class="brand" href="#session"><span class="brand-mark" aria-hidden="true"></span>Light Magic</a><div class="status"><b id="state" class="state-pill" role="status">Not started</b><button id="stop" class="danger">Pause output <kbd>Esc</kbd></button></div></header>
+<nav aria-label="Workspace">
+  <button data-view="session" class="active" aria-current="page" aria-controls="sessionPanel">Session</button>
+  <button data-view="cues" aria-controls="cueSheetPanel">Cue sheet</button>
+  <button data-view="speech" aria-controls="speechPanel">Speech</button>
+  <button data-view="learn" aria-controls="learnPanel">Learn</button>
+  <button data-view="advanced" aria-controls="advancedPanel">Console</button>
+  <button data-view="settings" aria-controls="settingsPanel">Settings</button>
+</nav>
+</div>
+<div id="message" role="status">Settings saved on this laptop.</div>
+<div id="sessionLayoutTools" class="session-layout-tools" hidden>
+  <div id="hiddenSessionPanels" class="row"></div>
+  <button id="resetSessionLayout" type="button" hidden>Reset layout</button>
+</div>
+<p id="sessionLayoutStatus" class="visually-hidden" role="status"></p>
+<main id="appMain" tabindex="-1">
+<section id="sessionPanel" class="view-panel session-card" data-session-panel="rehearsal"><div class="card-heading"><h1 id="sessionTitle">Start your session</h1></div>
+<div class="session-layout"><div class="session-core"><p id="sessionSummary" class="lede">Start the camera and connect to your saved console. Starting never fires a cue.</p><label class="source-selector">Input source<select id="inputSource"><option value="camera">Camera</option><option value="speech">Speech only</option><option value="both">Camera + speech</option></select></label><p id="speechSourceWarning" class="speech-source-warning" role="status" hidden></p><div class="session-start-options">
+  <div class="row"><button id="startRehearsal" class="primary large" aria-describedby="rehearsalHelp">Start rehearsal</button>
+  <button id="startSession" class="large">Start console session</button></div>
+  <p id="rehearsalHelp" class="hint">Rehearse with your selected inputs and the Movement Lab stage preview.</p>
+</div>
+<div id="rehearsalControls" hidden></div>
+<div id="sessionWorkflow" hidden><div class="session-actions"><div id="blockReason" class="next-action" role="status">Checking session readiness…</div><div class="row"><button id="nextAction" class="primary">Continue setup</button><button id="skipLookTests" type="button" hidden>Skip look tests</button><button type="button" data-skip-speech-practice hidden>Skip speech practice</button><button id="arm" class="primary large">Go live</button></div></div><details id="sessionChecks" class="session-checks"><summary>Session checks</summary><ol id="readiness" class="readiness" aria-label="Session readiness"></ol></details><p id="sessionIdentity" class="hint"></p></div></div><div class="session-context"><div class="session-cue-sheet">
+  <div><h2>Cue sheet</h2><p id="showCueSummary">Review output assignments before going live.</p></div>
+  <button id="showCueShortcut" type="button">Open cue sheet <span aria-hidden="true">→</span></button>
+</div>
+<p id="showLastOutput" class="stage-last-output" role="status" hidden></p>
+<p id="cueDispatchStatus" class="hint" role="status">Console spacing: 2 seconds minimum.</p>
+<div class="session-foot"><span id="owner">No active session</span><span id="connection">Console disconnected</span></div>
+<details class="session-diagnostics"><summary>Why did this trigger send or stop?</summary><div id="sessionDiagnostics"></div></details>
+</div></div></section>
+<section id="speechPreview" class="speech-preview" data-session-panel="speech" hidden><div class="card-heading"><h2>Speech preview</h2><span id="speechPreviewStatus" class="badge">Microphone off</span></div><p id="speechPreviewTranscript" class="transcript">Say a phrase to see it here.</p><p id="speechPreviewMatch" class="hint">No phrase matched yet.</p>
+<label class="preview-audio-label" for="showSpeechPreviewLevel">Microphone level</label>
+<meter id="showSpeechPreviewLevel" min="0" max="1" value="0" aria-label="Microphone level in session"></meter>
+<p id="showSpeechPreviewEngine" class="hint">Local recognition</p><button id="speechPreviewStart">Start microphone</button><p class="hint">Recognition stays on this laptop. Preview sends no cues.</p></section>
+<section class="camera" id="cameraPanel" data-session-panel="gesture"><div class="card-heading"><div><h2 id="gestureHeading">Movement preview</h2></div><span id="previewBadge" class="badge">Preview · no cues</span></div>
+<div class="preview"><video id="video" autoplay muted playsinline></video><canvas id="canvas"></canvas><span id="cameraNote">Camera off · processed on this laptop</span></div>
+<div class="camera-readout" role="region" aria-label="Gesture status" tabindex="0">
+<div class="row"><strong id="gesture">No gesture</strong><span id="confidence">0%</span><span id="mapped">—</span></div><progress id="hold" max="1" value="0"></progress><p id="tracking">Return to neutral for 0.3 seconds before each gesture.</p>
+<button id="startGestureHold" type="button" hidden>Start next gesture hold</button>
+<p id="cameraOutput" role="status">No camera command sent.</p>
+<details class="hint">
+  <summary>Gesture debug</summary>
+  <p>Send a saved gesture mapping through the live cue queue. This can change the physical lights.</p>
+  <div class="row">
+    <label>Gesture<select id="gestureDebugSelect"></select></label>
+    <button id="gestureDebugSend" type="button" disabled>Send mapped output live</button>
+  </div>
+  <p id="gestureDebugStatus" role="status">Go live to use this check.</p>
+</details>
+<dl class="stage-diagnostics" aria-label="Camera diagnostics">
+  <div><dt>Light</dt><dd id="showCameraLight">Not measured</dd></div>
+  <div><dt>Body</dt><dd id="showCameraBody">Not tracked</dd></div>
+  <div><dt>Hands</dt><dd id="showCameraHands">Not tracked</dd></div>
+</dl>
+<p id="showCameraGuide" class="hint" role="status">Frame the performer with room for both arms.</p>
+<p id="showCameraPose" class="stage-pose" role="status" hidden></p>
+</div>
+</section>
+<section class="stage-preview" id="stagePreview" data-session-panel="stage" aria-label="Movement Lab stage preview" tabindex="-1" hidden></section>
+<div id="cueSheetPanel" class="view-panel wide cue-sheet-stack" data-panel="cues" hidden>
+  <section class="cue-sheet-intro">
+    <div class="card-heading"><h1>Cue sheet</h1><button id="speechSave" class="primary">Save assignments</button></div>
+    <p id="showCueSheetTitle" class="cue-sheet-title">Current setup</p>
+    <p id="showCueSheetStatus">Choose Cue or Channel level for each trigger. Enable only the outputs you want to use.</p>
+    <p id="mappedLevelsUpdate" class="hint" role="status" hidden>Restart Light Magic to save channel, zoom, and color mappings.</p>
+    <div id="showPresetCard" class="show-preset-card" hidden>
+      <div class="card-heading"><h2>How to Make the Air Obey</h2><button id="showLoadPreset" type="button">Load show cue sheet</button></div>
+      <p>Use the revised movement and speech vocabulary. Cue numbers start blank the first time. Your previous setup is kept on this laptop.</p>
+      <details class="show-vocabulary">
+        <summary>Preview the nine triggers</summary>
+        <dl>
+          <div><dt>Open palm</dt><dd>Full / revealing light</dd></div>
+          <div><dt>Fist</dt><dd>Lights off / blackout</dd></div>
+          <div><dt>Fire gesture</dt><dd>Hold the three-finger shape · red-orange / fire state</dd></div>
+          <div><dt>Ankh pose</dt><dd>Ceremonial / halo state</dd></div>
+          <div><dt>Let there be light</dt><dd>White light</dd></div>
+          <div><dt>Abracadabra</dt><dd>Transformation state</dd></div>
+          <div><dt>They shall not pass</dt><dd>Red barrier</dd></div>
+          <div><dt>At my command</dt><dd>Authoritarian state</dd></div>
+          <div><dt>Stand down</dt><dd>Lights off / blackout</dd></div>
+        </dl>
+      </details>
+    </div>
+    <button id="showRestorePreset" type="button" hidden>Restore previous setup</button>
+    <div class="show-preset-card" id="directLookCard">
+      <div class="card-heading"><h2>Movement Lab channel looks</h2></div>
+      <p>Eight lighting looks for the show vocabulary, built from the 22 archived fixtures.</p>
+      <label>Look<select id="directLookChoice" aria-describedby="directLookDescription" disabled></select></label>
+      <p id="directLookDescription" class="hint"></p>
+      <div class="row">
+        <button id="previewDirectLook" type="button" disabled>Preview on stage</button>
+        <button id="loadDirectLooks" type="button" disabled>Use these looks</button>
+        <button id="undoDirectLooks" type="button" hidden>Restore earlier assignments</button>
+      </div>
+    </div>
+  </section>
+  <section class="mapping-settings">
+    <div class="card-heading"><h2>Camera triggers</h2><button id="showTuning" type="button" aria-expanded="false" aria-controls="showCameraTable">Show recognition settings</button></div>
+    <p id="showFireNotice" class="hint" hidden>Fire uses a held three-finger shape. Test it in rehearsal, assign an output, and enable its row when ready.</p>
+    <div class="tablewrap" tabindex="0" role="region" aria-label="Camera cue assignments">
+      <table id="showCameraTable" class="show-camera-table"><thead><tr><th scope="col">Use</th><th scope="col">Gesture</th><th scope="col">Lighting action</th><th scope="col">Output</th><th scope="col">List / channel</th><th scope="col">Cue / fixture settings</th><th scope="col" data-show-tuning>Threshold</th><th scope="col" data-show-tuning>Hold (s)</th><th scope="col">Status</th><th scope="col">Manual test</th></tr></thead><tbody id="mappings"></tbody></table>
+    </div>
+  </section>
+  <section>
+    <h2>Spoken triggers</h2>
+    <div class="tablewrap" tabindex="0" role="region" aria-label="Speech cue assignments">
+      <table class="speech-table show-speech-table"><thead><tr><th scope="col">Use</th><th scope="col">Phrase</th><th scope="col" id="showSpeechEffectHeading" hidden>Lighting action</th><th scope="col">Output</th><th scope="col">List / channel</th><th scope="col">Cue / fixture settings</th><th scope="col">Status</th><th scope="col">Manual test</th></tr></thead><tbody id="speechMappings"></tbody></table>
+    </div>
+    <p class="hint">To use spoken cues, select Speech only or Camera + speech in Session. The Speech workspace shows what the microphone heard.</p>
+  </section>
+</div>
+<div id="settingsPanel" class="view-panel wide settings-stack" data-panel="settings" hidden><section><div class="card-heading"><div><h1>Settings</h1></div><button id="apply" class="primary">Save changes</button></div><p id="settingsStatus" class="hint">Changes to input and output settings pause the session.</p><div class="fields"><label>Output mode<select id="mode"><option value="cue">Hand gestures → cues or fixture settings</option><option value="motion">Learned motions → cues or fixture settings</option><option value="zoom">Two hands → Zoom</option></select></label></div><div class="row"><select id="cameraSelect" aria-label="Camera"><option value="">Default camera</option></select><button id="cameraRefresh">Refresh cameras</button><button id="cameraStart">Start camera</button><button id="cameraStop">Stop camera</button></div><label>Lab notes (version, fixture, operator, IP/subnet, results)<textarea id="notes" rows="5"></textarea></label></section>
+<details class="utility-panel"><summary>Offline tools and backups</summary><p class="hint">With Dry Run selected and the camera stopped, hold a gesture to preview its mapping. Release to neutral. Mouse input never sends console cues or completes camera checks.</p><div id="demoGestures" class="row"></div><label>Simulated hand distance<input id="demoDistance" type="range" min="0" max="1.4" step=".005" value=".4"></label><label><input id="demoHands" type="checkbox"> Simulate two confident hands</label><p>Close / far calibration also accepts the demo distance.</p>
+<div class="row"><button id="save">Export settings</button><button id="load">Import settings</button><input id="loadFile" type="file" accept=".json" hidden></div><p class="hint">Importing settings pauses output. Console checks stay with the current session.</p>
+</details></div><div id="learnPanel" class="view-panel learn-stack" data-panel="learn" hidden><section><h2>Teach your fist and open palm</h2><div class="row"><button id="learnFist">Learn closed fist</button><button id="learnPalm">Learn open palm</button><button id="resetPoses">Reset learned poses</button></div><p id="poseCalibration">Hand poses not learned.</p><p class="hint">If the model struggles: hold your closed hand in view and click Learn closed fist, then open it and click Learn open palm. Learning pauses output. Return to Session when ready to resume. Pose similarity is a distance comparison with your samples, not a model confidence score.</p></section><section class="custom-motions"><h2>Learn a named motion</h2>
+<p>Give a hands/arms motion a name, press Learn, and demonstrate it. The camera learns the hand path and finger shapes over time. Keep the same hand(s) visible through the whole motion.</p>
+<div class="motion-editor" id="motionEditor">
+  <label>Trigger<select id="motionSelect"><option value="">＋ New trigger</option></select></label>
+  <label>Trigger name<input id="motionName" data-field="name" maxlength="80" placeholder="e.g. Sweeping wave"></label>
+  <label>Output<select id="motionOutputType" data-field="output_type"><option value="cue">Cue</option><option value="channel_level">Channel settings</option><option value="channel_look">Channel look</option></select></label>
+  <label>Recording length (s)<input id="motionDuration" type="number" min="1" max="6" step=".1" value="3"></label>
+  <label id="motionCueListField">Cue list<input id="motionCueList" data-field="cue_list" type="number" min="1" max="999" value="1"></label>
+  <label id="motionCueField">Cue number<input id="motionCue" data-field="cue" placeholder="Existing Eos cue"></label>
+  <label id="motionChannelField" hidden>Channel<input id="motionChannel" data-field="channel" type="number" min="1" max="99999" step="1"></label>
+  <label id="motionLevelField" hidden>Intensity (%)<input id="motionLevel" data-field="level" type="number" min="0" max="100" step="any" placeholder="Optional"></label>
+  <label id="motionZoomField" hidden>Zoom (%)<input id="motionZoom" data-field="zoom" type="number" min="0" max="100" step="any" placeholder="Optional"></label>
+  <div id="motionColorField" hidden><label>Color<input id="motionColor" data-field="color" type="text" placeholder="#rrggbb" maxlength="7" autocomplete="off" spellcheck="false"></label><input id="motionColorPicker" class="mapping-fixture-color" type="color" aria-label="Choose color for this motion"></div>
+  <div id="motionChannelLook" hidden></div>
+</div>
+<p id="motionExampleCount">Name the new trigger and choose its output.</p>
+<div class="row"><button id="motionLearn" class="primary">Learn demonstration</button><button id="motionCancel" hidden>Cancel learning</button><button id="motionPractice">Practice selected motion</button><button id="motionStopPractice">Stop practice</button></div>
+<p id="motionRecordState">Learn gives a 2-second countdown, then records the chosen length.</p><progress id="motionRecordProgress" max="1" value="0"></progress>
+<p id="customMotionStatus" role="status">Start the camera, name the trigger, choose an output, then Learn.</p>
+<meter id="motionSimilarity" min="0" max="1" value="0"></meter><p id="motionPracticeResult">Practice runs while disarmed and sends no cue.</p><button id="motionConfirmPractice" disabled>I saw the correct motion match</button>
+<p class="hint">This compares a short movement with your recorded examples; it is not general action understanding. Add 2–3 demonstrations for natural variation. Similarity is a template score, not a probability. Only hand landmarks are saved, not camera video. New examples are saved disabled.</p>
+<div class="tablewrap"><table><thead><tr><th>Use</th><th>Trigger name</th><th>Output</th><th>List / channel</th><th>Cue / fixture settings</th><th>Similarity</th><th>Examples</th><th>Actions</th></tr></thead><tbody id="customMotionRows"></tbody></table></div>
+<div class="row"><button id="motionUseMode" class="primary">Use learned-motion mode</button><button id="motionUndo" hidden>Undo delete</button></div><p id="customMotionMode">Named-motion output is disarmed.</p>
+<p class="hint">Save enabled mappings, choose learned-motion mode, then return to Session to check outputs and go live.</p>
+</section></div><div id="speechPanel" class="view-panel wide speech-stack" data-panel="speech" hidden><section><div class="card-heading"><h1>Speech</h1><span id="speechStatus" class="badge">Microphone off</span></div><div class="speech-input-notice"><p id="speechInputWarning" role="status">Check the selected input source and microphone before speaking.</p><button id="speechUseBoth" class="primary" hidden>Use camera + speech</button><button type="button" data-skip-speech-practice hidden>Skip speech practice</button></div><p id="speechPrivacy">Recognition runs on this laptop. Microphone audio is not saved or uploaded.</p><div class="fields speech-device-fields">
+  <label>Microphone<select id="microphoneSelect"><option value="">Default microphone</option></select></label>
+  <label>Recognition engine<select id="speechBackend" aria-describedby="showSpeechEngineHelp">
+    <option value="auto">Automatic (recommended)</option><option value="enhanced">Enhanced · local</option><option value="vosk">Standard · local</option>
+  </select></label>
+</div>
+<div class="row"><p id="showSpeechEngineHelp" class="hint">Automatic prefers Standard for lower delay. Save changes before starting the microphone.</p><button id="speechSaveEngine" type="button">Save recognition settings</button></div><div class="row microphone-actions"><button id="microphoneStart" class="primary">Start microphone</button><button id="microphoneStop" disabled>Stop microphone</button><button id="microphoneRefresh">Refresh microphones</button></div><label>Microphone level<meter id="speechLevel" min="0" max="1" value="0" aria-label="Microphone level"></meter></label><dl class="stage-diagnostics" aria-label="Speech diagnostics"><div><dt>Engine</dt><dd id="showSpeechEngine">Local recognition</dd></div><div><dt>Input</dt><dd id="showSpeechInput">Microphone off</dd></div><div><dt>Decoder time</dt><dd id="showSpeechLatency">No result yet</dd></div></dl>
+<div class="transcript-box"><p id="speechTranscript" class="transcript">Say a phrase to see it here.</p><p id="speechMatch" role="status">No phrase matched yet.</p><button id="speechConfirmPractice" disabled>Confirm recognized phrase</button></div><p id="showSpeechMatchHelp" class="hint">Say the complete phrase, then pause briefly. Only complete, matching phrases can trigger cues while live.</p>
+<div id="speechShortCommands" class="speech-short-commands" hidden>
+  <h2>Short commands</h2>
+  <dl id="speechShortCommandList"></dl>
+  <p id="speechShortCommandSetup" class="hint" hidden>Assign an output and enable its phrase in Cue sheet to use the short commands.</p>
+</div>
+</section><section class="speech-debug"><h2>Typed phrase test</h2><p>Check a saved phrase or short command without speaking. This tests the mapping and console path; it cannot verify the microphone.</p><label>Phrase to check<input id="speechDebugPhrase" type="text" maxlength="160" placeholder="e.g. light" autocomplete="off"></label><div class="row"><button id="speechDebugCheck">Check phrase</button><button id="speechDebugSend" class="primary" disabled>Send matched output live</button><button id="speechDebugConfirm" hidden disabled>I saw the correct result</button></div><p id="speechDebugResult" role="status">Checking sends no output.</p><p id="speechDebugDetails" class="hint"></p><ul id="speechDebugBlockers"></ul><p class="hint">Send matched output live pauses automatic output and runs one console test.</p></section></div>
+<div id="advancedPanel" class="view-panel wide advanced-stack" data-panel="advanced" hidden>
+  <div class="workspace-heading wide">
+    <h1>Console</h1>
+    <p>Adjust a fixture or check your Eos connection.</p>
+  </div>
+  <section class="channel-level" aria-labelledby="channelLevelTitle">
+    <h2 id="channelLevelTitle">Set fixture parameters</h2>
+    <div class="fields manual-fixture-fields" aria-describedby="fixtureParametersHint">
+      <label>Channel<input id="manualChannel" type="number" min="1" max="99999" step="1" placeholder="28"></label>
+      <label>Intensity (%)<input id="manualChannelLevel" type="number" min="0" max="100" step="any" placeholder="Unchanged"></label>
+      <label>Zoom (%)<input id="manualChannelZoom" type="number" min="0" max="100" step="any" placeholder="Unchanged"></label>
+      <div class="manual-fixture-color">
+        <label class="check"><input id="manualSetColor" type="checkbox"> Set color</label>
+        <input id="manualChannelColor" type="color" aria-label="Fixture color" value="#ffffff" disabled>
+      </div>
+    </div>
+    <p class="hint" id="fixtureParametersHint">Choose any settings to change. Check the Eos patch for zoom and color support.</p>
+    <output id="channelLevelPreview" for="manualChannel manualChannelLevel manualChannelZoom manualChannelColor">Enter a channel and at least one setting</output>
+    <div class="row channel-level-actions">
+      <button id="previewChannelOnStage" type="button" disabled>Preview on stage</button>
+      <button id="reviewChannelLevel" type="button" class="primary" disabled>Review and send</button>
+    </div>
+    <p id="channelLevelStatus" class="hint" role="status"></p>
+    <button id="channelLevelSession" type="button" hidden>Open Session</button>
+  </section>
+  <section class="console-connection" aria-labelledby="consoleConnectionTitle">
+    <h2 id="consoleConnectionTitle">Eos connection</h2>
+    <p id="consoleProgramStatus" class="hint">Connect to Eos to adjust fixtures live.</p>
+    <label>Console IP<input id="host" placeholder="Console IP address"></label>
+    <div class="row console-actions">
+      <button id="programConsole" type="button" class="primary" disabled>Connect to Eos</button>
+      <button id="saveConnection" type="button">Save connection</button>
+    </div>
+    <details class="inline-details">
+      <summary>Connection details</summary>
+      <div class="fields">
+        <label>TCP port<input id="port" type="number" value="3032"></label>
+        <label>OSC framing<select id="framing"><option value="slip">1.1 · SLIP</option><option value="length">1.0 · Packet length</option></select></label>
+      </div>
+      <div class="row"><button id="connect">Reconnect console</button><button id="testConnection">Test connection</button><button id="claim">Take control</button><button id="recheckCues">Recheck outputs</button></div>
+      <pre id="diagnostics" role="status">No diagnostic test run.</pre>
+      <pre id="feedback">Waiting for console identity.</pre>
+      <label class="check"><input id="dry_run" type="checkbox"> Dry Run</label>
+    </details>
+  </section>
+  <details class="utility-panel wide">
+    <summary>Zoom and hand spacing</summary>
+    <p class="hint">Calibrate hand spacing for two-hand Zoom or the Arms Open trigger.</p>
+<div class="fields"><label>Target type<select id="target_type"><option value="chan">Single channel</option><option value="group">Group (after channel test)</option></select></label><label>Target number<input id="target" type="number" min="1" placeholder="Required for Zoom only"></label><label>Minimum (fixture units)<input id="zoom_min" type="number" step="any" placeholder="Verify on Eos"></label><label>Maximum (fixture units)<input id="zoom_max" type="number" step="any" placeholder="Verify on Eos"></label><label>Smoothing alpha<input id="alpha" type="number" step=".01"></label><label>Deadband (0.02 = 2%)<input id="deadband" type="number" step=".01"></label><label>Updates / second<input id="rate_hz" type="number"></label><label>Hand loss release (s)<input id="hand_loss_s" type="number" step=".1"></label><label>Hand confidence threshold<input id="hand_confidence" type="number" step=".01"></label><label><input id="reverse" type="checkbox"> Reverse Zoom</label></div>
+<p class="hint">Parameter: <b>zoom</b>. Verify that token and its natural units in the patched fixture. Values are never assumed to be degrees or percent.</p>
+<div class="row"><button id="setClose">Set hands close</button><output id="closeValue">Not set</output><button id="setFar">Set hands far</button><output id="farValue">Not set</output></div><p id="zoomReadout">Track two hands to measure distance.</p><meter id="zoomMeter" min="0" max="1" value="0"></meter>
+<div class="row"><label>Manual value<input id="manualValue" type="number" step="any"></label><button id="manualZoom">Test Zoom live</button><button id="release">Release Zoom</button><button id="confirmZoom">I observed the correct Zoom and release</button></div><p id="ownership">No owned override</p><p class="hint">Test Zoom and Release Zoom, then confirm their visible results. Zoom values use the fixture's natural units.</p>
+</details><section class="cue-pacing"><div class="card-heading"><h2>Cue pacing</h2><button id="saveCuePacing" type="button">Save changes</button></div><label>Minimum time between console actions (seconds)<input id="cue_interval_s" type="number" min="1" max="10" step=".1" value="2"></label><p class="hint">Cues and fixture changes share this spacing.</p>
+</section>
+<details class="utility-panel wide"><summary>Activity and camera details</summary>
+  <pre id="log" aria-live="off"></pre><button id="downloadLog">Save event log</button>
+  <pre id="cameraDebug">Camera details appear here.</pre>
+</details>
+</div></main>
+<dialog id="channelLevelDialog" aria-labelledby="channelLevelTitleDialog"><form method="dialog">
+  <h2 id="channelLevelTitleDialog">Send fixture settings?</h2>
+  <p><code id="channelLevelCommand"></code></p><p id="channelLevelDestination"></p>
+  <div class="row dialog-actions"><button value="cancel" autofocus>Back</button><button id="sendChannelLevel" type="button" class="primary">Send to Eos</button></div>
+</form></dialog>
+<dialog id="sessionConfirm" aria-labelledby="sessionConfirmTitle"><form method="dialog"><h2 id="sessionConfirmTitle">Is this your console and show?</h2><div id="confirmIdentity" class="identity-box"></div><label class="check"><input id="only_host" type="checkbox"> This is the only laptop controlling this console.</label><p class="hint">Light Magic reserves this bridge for one browser. Independent control computers must be disconnected.</p><div class="row dialog-actions"><button value="cancel">Back</button><button id="confirmSession" type="button" class="primary">Confirm session</button></div></form></dialog>
+<dialog id="targetTestDialog" aria-labelledby="targetTestTitle"><form method="dialog"><h2 id="targetTestTitle">Test output</h2><p id="targetTestDescription"></p><details id="targetTestLook" hidden><summary>Channel settings</summary><ul id="targetTestLookChannels"></ul></details><p id="targetTestState" role="status"></p><div class="row dialog-actions"><button value="cancel">Close</button><button id="sendTargetTest" type="button" class="primary">Send test cue live</button><button id="confirmTargetTest" type="button" class="primary" hidden>I saw the correct result</button><button id="rejectTargetTest" type="button" hidden>Result was not correct</button></div></form></dialog>
+<dialog id="directLookDialog" aria-labelledby="directLookTitle" aria-describedby="directLookDetails"><form method="dialog"><h2 id="directLookTitle"></h2><p id="directLookDetails"></p><div class="row dialog-actions"><button value="cancel" autofocus>Back</button><button id="directLookConfirm" type="button" class="primary"></button></div></form></dialog>
+<dialog id="showPresetDialog" aria-labelledby="showPresetTitle" aria-describedby="showPresetDetails"><form method="dialog"><h2 id="showPresetTitle">Switch cue sheet?</h2><p id="showPresetDetails"></p><div class="row dialog-actions"><button value="cancel">Back</button><button id="showPresetConfirm" type="button" class="primary">Switch cue sheet</button></div></form></dialog>
+<input id="session_ok" type="checkbox" hidden><input id="cue_ok" type="checkbox" hidden><input id="zoom_ok" type="checkbox" hidden>
+<footer>Local camera and speech processing · saved on this laptop · Escape pauses output</footer><script type="module" src="app.js"></script></body></html>

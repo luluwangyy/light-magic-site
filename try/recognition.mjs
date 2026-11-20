@@ -1,39 +1,45 @@
-// The upstream MediaPipe files and their hashes are listed in vendor/manifest.json.
-const WASM_PATH = new URL('./vendor/wasm', import.meta.url).href;
-const HAND_MODEL = 'https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task';
-const GESTURES = {Open_Palm:'open-palm', Closed_Fist:'fist'};
+// Camera recognition shares the published local controller's models and geometry.
+const GESTURES = {Open_Palm:'open-palm', Closed_Fist:'fist', Fire_Gesture:'fire', Ankh_Pose:'ankh'};
+const HOLD_MS = {Open_Palm:600, Closed_Fist:650, Fire_Gesture:650, Ankh_Pose:700};
+const OBSERVATION_GAP_MS = 450, BRIEF_GAP_MS = 220;
 
 async function loadHandRecognizer() {
-  const {FilesetResolver, GestureRecognizer} = await import('./vendor/vision_bundle.mjs');
-  const files = await FilesetResolver.forVisionTasks(WASM_PATH);
-  return GestureRecognizer.createFromOptions(files, {
-    baseOptions: {modelAssetPath: HAND_MODEL, delegate: 'CPU'},
-    runningMode: 'VIDEO',
-    numHands: 1,
-  });
+  const {createLabCamera}=await import('./lab-camera.mjs');
+  return createLabCamera();
 }
 
 function stableGesture() {
-  let candidate, since, previousSample, latched, neutralSince;
-  return (category, now) => {
-    if (now - previousSample > 240) {
-      candidate = undefined;
+  let candidate, track, previousSample, lastGood, latched, neutralSince, held=0, gap=false;
+  const clearHold=()=>{candidate=track=lastGood=undefined;held=0;gap=false;};
+  return (category, now, observation) => {
+    const delta=previousSample===undefined?0:now-previousSample;
+    if (delta > OBSERVATION_GAP_MS) {
+      clearHold();
       neutralSince = undefined;
     }
     previousSample = now;
     const gesture = Object.hasOwn(GESTURES, category?.categoryName) && GESTURES[category.categoryName];
-    if (!gesture || !(category.score >= .70 && category.score <= 1)) {
-      candidate = undefined;
+    if(observation?.tracking_uncertain){
+      neutralSince=undefined;
+      if(observation.tracking_gap==='brief'&&candidate&&track&&track===observation.tracking_key&&now-lastGood<=BRIEF_GAP_MS)gap=true;
+      else clearHold();
+      return;
+    }
+    if (!gesture || !(category.score >= .80 && category.score <= 1)) {
+      clearHold();
       neutralSince ??= now;
-      if (now - neutralSince >= 250) latched = undefined;
+      if (now - neutralSince >= 300) latched = undefined;
       return;
     }
     neutralSince = undefined;
-    if (gesture !== candidate) {
+    const observedTrack=observation?.tracking_key??null;
+    if (gesture !== candidate || track!==observedTrack || gap&&now-lastGood>BRIEF_GAP_MS) {
+      clearHold();
       candidate = gesture;
-      since = now;
-    }
-    if (gesture === latched || now - since < 320) return;
+      track=observedTrack;
+    }else if(!gap)held+=Math.max(0,delta);
+    lastGood=now;gap=false;
+    if (gesture === latched || held < HOLD_MS[category.categoryName]) return;
     latched = gesture;
     return {gesture, score: category.score};
   };
@@ -108,8 +114,9 @@ export function createCameraRecognition({
           lastSample = now;
           try {
             const result = recognizer.recognizeForVideo(video, now);
+            if(!result){current.frame=requestAnimationFrame(frame);return;}
             onLandmarks(result.landmarks?.[0] ?? []);
-            const gesture = observe(result.gestures?.[0]?.[0], now);
+            const gesture = observe(result.gestures?.[0]?.[0], now,result.observation);
             if (gesture) onGesture(gesture);
           } catch {
             fail(current, 'Camera recognition stopped. Try restarting it or use a manual gesture.');

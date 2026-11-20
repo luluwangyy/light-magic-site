@@ -1,0 +1,4 @@
+# The 0.3.44 universal2 wheel supports both Intel and Apple Silicon.
+vosk==0.3.44; sys_platform == 'darwin'
+vosk==0.3.45; sys_platform != 'darwin'
+webrtcvad-wheels==2.0.14

@@ -91,21 +91,21 @@
 
             <section class="mode-panel" id="mode-bridge" data-setup-panel aria-labelledby="bridge-title">
               <h3 id="bridge-title">Set up the bridge computer</h3>
-              <p>Install Light Magic on the computer connected to Eos. You’ll need Python 3.10 or newer and access to the private GitHub project. For speech on macOS, use Python 3.12 or 3.13.</p>
+              <p>Install Light Magic on the computer connected to Eos. Use Python 3.12 on Windows or macOS. The download includes the source, camera models and stage preview.</p>
               <ol class="signal-path" aria-label="Bridge signal path">
                 <li>Bridge computer</li><li>OSC over TCP</li><li>ETC Eos</li>
               </ol>
-              <a class="action action-primary" href="https://github.com/luluwangyy/light-magic/archive/refs/heads/revised.zip">Download project ZIP <span aria-hidden="true">↗</span></a>
+              <a class="action action-primary" href="./downloads/light-magic-controller.zip">Download controller <span aria-hidden="true">↓</span></a>
               <details class="install-details">
                 <summary>Installation steps</summary>
                 <ol class="install-steps">
-                  <li><strong>Extract the ZIP.</strong> Sign in to GitHub before downloading, then extract the files on the bridge computer.</li>
+                  <li><strong>Extract the ZIP.</strong> The current controller is a public download. Extract it on the computer that will connect to Eos.</li>
                   <li><strong>Start the launcher.</strong> Open <code>Start Movement Gesture.bat</code> on Windows or <code>Start Movement Gesture.command</code> on macOS. On macOS you can also run <code>sh "Start Movement Gesture.command"</code> from the extracted folder. Keep the launcher running.</li>
                   <li><strong>Open the controller.</strong> In Chrome or Edge on the bridge computer, open <a href="http://127.0.0.1:8765/">http://127.0.0.1:8765/</a>. This address points to the computer you’re using.</li>
                   <li><strong>Add speech if needed.</strong> While online, open <code>Setup speech recognition.bat</code> on Windows or <code>Setup speech recognition.command</code> on macOS. Restart Light Magic. Speech recognition runs offline after setup.</li>
                 </ol>
               </details>
-              <p class="mode-note"><a href="https://github.com/luluwangyy/light-magic/blob/revised/README.md#shared-live-control">Set up private HTTPS access for other computers ↗</a></p>
+              <p class="mode-note">Version 2026.11.19 · <a href="https://github.com/luluwangyy/light-magic-site/blob/main/controller/docs/shared-live-control.md">Set up HTTPS access for other computers ↗</a></p>
             </section>
           </div>
         </div>
@@ -135,7 +135,7 @@
 
   <footer class="show-footer frame">
     <span>Light Magic</span>
-    <a href="https://github.com/luluwangyy/light-magic/tree/revised">Source &amp; documentation <span aria-hidden="true">↗</span></a>
+    <a href="https://github.com/luluwangyy/light-magic-site/tree/main/controller">Source &amp; documentation <span aria-hidden="true">↗</span></a>
   </footer>
 </body>
 </html>
